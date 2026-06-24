@@ -1,13 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom'
 
 const DashboardLayout = () => {
-  return (
-    <div>
-      <h2>Qarz Manager</h2>
+	return (
+		<div>
+			<h2>Qarz Manager</h2>
 
-      <Outlet />
-    </div>
-  );
-};
+			<Outlet />
+		</div>
+	)
+}
 
-export default DashboardLayout;
+export default DashboardLayout
