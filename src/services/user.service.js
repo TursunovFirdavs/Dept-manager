@@ -91,14 +91,25 @@ export const updateSubscriptionStatus = async (uid, status) => {
   });
 };
 
-export const updateSubscriptionDate = async (uid, endDate) => {
-  await updateDoc(doc(db, "users", uid), {
-    subscription: {
-      status: "active",
-      startDate: serverTimestamp(),
-      endDate: Timestamp.fromDate(new Date(endDate)),
-    },
+export const updateSubscriptionDate = async (uid, date) => {
+  const selectedDate = new Date(date);
 
+  const today = new Date();
+
+  const status = selectedDate < today ? "expired" : "active";
+
+  await updateDoc(doc(db, "users", uid), {
+    "subscription.endDate": Timestamp.fromDate(selectedDate),
+
+    "subscription.status": status,
+
+    updatedAt: serverTimestamp(),
+  });
+};
+
+export const expireSubscription = async (uid) => {
+  await updateDoc(doc(db, "users", uid), {
+    "subscription.status": "expired",
     updatedAt: serverTimestamp(),
   });
 };

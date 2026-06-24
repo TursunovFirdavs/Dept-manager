@@ -4,7 +4,11 @@ import { observeAuth } from "../services/auth.service";
 
 import { useAuthStore } from "../store/authStore";
 
-import { createUserIfNotExists, getUserData } from "../services/user.service";
+import {
+  createUserIfNotExists,
+  expireSubscription,
+  getUserData,
+} from "../services/user.service";
 
 export default function AuthProvider({ children }) {
   const setUser = useAuthStore((state) => state.setUser);
@@ -23,6 +27,24 @@ export default function AuthProvider({ children }) {
         await createUserIfNotExists(user);
 
         const userData = await getUserData(user.uid);
+
+        const endDate = userData?.subscription?.endDate;
+
+        if (endDate) {
+          const subscriptionEnd = endDate.toDate();
+          console.log(subscriptionEnd);
+
+          const today = new Date();
+
+          if (subscriptionEnd < today) {
+            await expireSubscription(user.uid);
+
+            userData.subscription = {
+              ...userData.subscription,
+              status: "expired",
+            };
+          }
+        }
 
         setUser(user);
 

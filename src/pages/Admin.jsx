@@ -37,11 +37,11 @@ const Admin = () => {
     setUsers(data);
   };
 
-  const handleSubscriptionDateChange = async (uid) => {
-    await updateSubscriptionDate(uid, selectedDate);
+  const handleSubscriptionDateChange = async (uid, date) => {
+    if (!date) return;
+    await updateSubscriptionDate(uid, date);
 
     const data = await getUsers();
-
     setUsers(data);
   };
   console.log(users);
@@ -66,6 +66,17 @@ const Admin = () => {
           <p>Role: {user.role}</p>
 
           <p>Status: {user.status}</p>
+
+          <p>Plan: {user.subscription?.plan}</p>
+          <p>Status: {user.subscription?.status}</p>
+          <p>
+            Start:
+            {user.subscription?.startDate?.toDate().toLocaleDateString()}
+          </p>
+          <p>
+            End:
+            {user.subscription?.endDate?.toDate().toLocaleDateString()}
+          </p>
 
           <p>
             Plan:
@@ -100,11 +111,20 @@ const Admin = () => {
           </button>
           <input
             type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            value={selectedDate[user.id] || ""}
+            onChange={(e) =>
+              setSelectedDate({
+                ...selectedDate,
+                [user.id]: e.target.value,
+              })
+            }
           />
-          <button onClick={() => handleSubscriptionDateChange(user.id)}>
-            change subscribe
+          <button
+            onClick={() =>
+              handleSubscriptionDateChange(user.id, selectedDate[user.id])
+            }
+          >
+            Change Subscribe
           </button>
         </div>
       ))}
