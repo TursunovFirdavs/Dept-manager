@@ -6,9 +6,11 @@ import "./App.css";
 import { router } from "./ruotes";
 
 import AuthProvider from "./components/AuthProvider";
+import { Toaster } from "react-hot-toast";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-	<AuthProvider>
-		<RouterProvider router={router} />
-	</AuthProvider>,
+  <AuthProvider>
+    <Toaster position="top-right" />
+    <RouterProvider router={router} />
+  </AuthProvider>,
 );

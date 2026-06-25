@@ -4,10 +4,6 @@ import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard";
-
-import ProtectedRoute from "./ProtectedRoute";
-import PublicRoute from "./PublicRoute";
 import FirmsPage from "../pages/Firms";
 import FirmDetails from "../pages/FirmDetails";
 import CalendarPage from "../pages/Calendar";
@@ -15,6 +11,9 @@ import AdminRoute from "./AdminRoute";
 import Admin from "../pages/Admin";
 import SubscriptionExpired from "../pages/SubscribtionExpired";
 import SubscriptionRoute from "./SubscriptionRoute";
+import PublicRoute from "./PublicRoute";
+import ProtectedRoute from "./ProtectedRoute";
+import DashboardPage from "@/pages/Dashboard";
 
 export const router = createBrowserRouter([
   {
@@ -40,7 +39,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/dashboard",
-        element: <Dashboard />,
+        element: <DashboardPage />,
       },
       {
         path: "/firms",
