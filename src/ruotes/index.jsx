@@ -14,6 +14,7 @@ import SubscriptionRoute from "./SubscriptionRoute";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import DashboardPage from "@/pages/Dashboard";
+import ProfilePage from "@/pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
             <Admin />
           </AdminRoute>
         ),
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
     ],
   },
