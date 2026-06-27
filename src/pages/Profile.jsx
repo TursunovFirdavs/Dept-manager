@@ -12,11 +12,14 @@ import {
 import toast from "react-hot-toast";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const ProfilePage = () => {
   const { userData } = useAuthStore();
 
-  // ESLint: react-hooks/set-state-in-effect xatosi oldini olish uchun dangasa initsializatsiya
+  console.log(userData);
+
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -149,7 +152,7 @@ const ProfilePage = () => {
           <Card className="w-full rounded-xl shadow-sm border-slate-200 dark:border-slate-800 bg-white dark:bg-card mb-5 overflow-hidden">
             <div className="flex flex-col">
               {/* Profilni tahrirlash */}
-              <button className="w-full flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-left group">
+              <button className="w-full flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-left group cursor-pointer">
                 <div className="flex items-center gap-3">
                   <Pencil className="w-4.5 h-4.5 text-slate-500 dark:text-slate-400" />
                   <span className="font-semibold text-[14px] text-slate-900 dark:text-slate-100">
@@ -172,7 +175,7 @@ const ProfilePage = () => {
                 <button
                   onClick={toggleDarkMode}
                   aria-label="Toggle Dark Mode"
-                  className={`relative inline-flex h-6.5 w-11 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${isDark ? "bg-[#1d4ed8]" : "bg-slate-200 dark:bg-slate-700"}`}
+                  className={`cursor-pointer relative inline-flex h-6.5 w-11 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${isDark ? "bg-[#1d4ed8]" : "bg-slate-200 dark:bg-slate-700"}`}
                 >
                   <span
                     className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${isDark ? "translate-x-5" : "translate-x-0.75"}`}
@@ -181,26 +184,34 @@ const ProfilePage = () => {
               </div>
 
               {/* Admin bilan bog'lanish */}
-              <button className="w-full flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-left group">
-                <div className="flex items-center gap-3">
-                  <Headphones className="w-4.5 h-4.5 text-slate-500 dark:text-slate-400" />
-                  <span className="font-semibold text-[14px] text-slate-900 dark:text-slate-100">
-                    Admin bilan bog'lanish
-                  </span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </button>
+              <Link
+                to={"https://t.me/FRDV001"}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="w-full flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-left group cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Headphones className="w-4.5 h-4.5 text-slate-500 dark:text-slate-400" />
+                    <span className="font-semibold text-[14px] text-slate-900 dark:text-slate-100">
+                      Admin bilan bog'lanish
+                    </span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </button>
+              </Link>
             </div>
           </Card>
 
           {/* Chiqish tugmasi */}
-          <button
+          <Button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 p-3 bg-white dark:bg-card border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-500 rounded-xl transition-colors font-semibold text-[14px] shadow-sm"
+            variant="destructive"
+            size="lg"
+            className={"w-full py-5"}
           >
             <LogOut className="w-4.5 h-4.5" />
             <span>Chiqish</span>
-          </button>
+          </Button>
         </div>
       </main>
     </div>
