@@ -14,6 +14,7 @@ import SubscriptionRoute from "./SubscriptionRoute";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import DashboardPage from "@/pages/Dashboard";
+import Transactions from "@/pages/Transactions";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
       {
         path: "/calendar",
         element: <CalendarPage />,
+      },
+      {
+        path: "/transactions",
+        element: <Transactions />,
       },
       {
         path: "/admin",

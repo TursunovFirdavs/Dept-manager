@@ -1,210 +1,124 @@
 import { useEffect, useState } from "react";
-import { logoutUser } from "../services/auth.service";
-import { getAllTransactions } from "../services/transaction.service";
 import { useAuthStore } from "../store/authStore";
 import { getFirms } from "../services/firm.service";
 
+import { Card, CardTitle } from "@/components/ui/card";
+import { logoutUser } from "@/services/auth.service";
+import { Bell, Search } from "lucide-react";
+import { Container } from "@/components/ui/container";
 import { Link } from "react-router-dom";
 
 const DashboardPage = () => {
-  const [transactions, setTransactions] = useState([]);
   const [firms, setFirms] = useState([]);
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     const loadDashboard = async () => {
-      const transactions = await getAllTransactions(user.uid);
       const firmsData = await getFirms(user.uid);
 
-      setTransactions(transactions);
       setFirms(firmsData);
     };
 
     loadDashboard();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const totalDebt = firms.reduce((sum, firm) => sum + (firm.balance || 0), 0);
+  const totalPayment = firms.reduce(
+    (sum, firm) => sum + (firm.totalPayment || 0),
+    0,
+  );
+  const totalPaymentPercent = (totalPayment / totalDebt) * 100;
+
+  const getInitials = (name) => {
+    const w = name.trim().split(/\s+/);
+    return w
+      .slice(0, w.length >= 3 ? 2 : w.length)
+      .map((x) => x[0].toUpperCase())
+      .join("");
+  };
+
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
   const handleLogout = async () => {
     await logoutUser();
   };
 
-  const totalPurchase = transactions
-    .filter((tx) => tx.type === "purchase")
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const totalPayment = transactions
-    .filter((tx) => tx.type === "payment")
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const totalDebt = firms.reduce((sum, firm) => sum + (firm.balance || 0), 0);
-
-  // filters
-  const today = new Date();
-
-  const todayPurchase = transactions
-    .filter((tx) => {
-      if (tx.type !== "purchase") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.toDateString() === today.toDateString();
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const todayPayment = transactions
-    .filter((tx) => {
-      if (tx.type !== "payment") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.toDateString() === today.toDateString();
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
-
-  const monthPurchase = transactions
-    .filter((tx) => {
-      if (tx.type !== "purchase") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return (
-        date &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
-      );
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const monthPayment = transactions
-    .filter((tx) => {
-      if (tx.type !== "payment") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return (
-        date &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
-      );
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const yearPurchase = transactions
-    .filter((tx) => {
-      if (tx.type !== "purchase") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.getFullYear() === currentYear;
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const yearPayment = transactions
-    .filter((tx) => {
-      if (tx.type !== "payment") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.getFullYear() === currentYear;
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const userData = useAuthStore((state) => state.userData);
-
-  console.log("userData", userData);
-
   return (
-    <div>
-      <h1>Dashboard</h1>
-
-      <p>{user?.email}</p>
-      <button onClick={handleLogout}>Chiqish</button>
-      <Link to="/firms">Firmalar</Link>
-
-      <h2>Statistika</h2>
-      <p>Jami firmalar: {firms.length}</p>
-
-      <p>
-        Jami olingan:
-        {totalPurchase}
-      </p>
-
-      <p>
-        Jami to'langan:
-        {totalPayment}
-      </p>
-
-      <p>
-        Jami qarz:
-        {totalDebt}
-      </p>
-
-      <h2>Oxirgi transactionlar</h2>
-
-      {transactions.map((tx) => (
-        <div
-          key={tx.id}
-          style={{
-            border: "1px solid #ddd",
-            padding: "10px",
-            marginBottom: "10px",
-          }}
-        >
-          <h4>{tx.firmName}</h4>
-
-          <p>
-            {tx.type === "purchase" ? "📦 Tovar olindi" : "💰 To'lov qilindi"}
-          </p>
-
-          <p>Summa: {tx.amount}</p>
-
-          <p>Izoh: {tx.note}</p>
+    <Container>
+      <div className="flex items-center justify-between py-5">
+        <div>
+          <p className="text-[10px] font-semibold">FINANCIAL</p>
+          <h2 className="text-2xl font-bold">DeptFlow</h2>
         </div>
-      ))}
+        <div className="bg-gray-200 w-9 h-9 flex items-center justify-center rounded-full">
+          <Bell className="w-5" />
+        </div>
+      </div>
 
-      <h2>Bugungi statistika</h2>
+      <Card className={"px-4"}>
+        <p className="text-[10px] font-semibold">UMUMIY QARZ</p>
+        <p className="text-3xl font-bold pb-3">
+          {totalDebt.toLocaleString("fr-FR")}
+        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-[10px]">Firmalar</p>
+            <p className="text-[10px] font-bold">{firms.length} ta</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <p className="text-[10px]">To'langan</p>
+            <p className="text-[10px] font-bold">
+              {Math.floor(totalPaymentPercent)?.toLocaleString("fr-FR")} %
+            </p>
+          </div>
+        </div>
+      </Card>
 
-      <p>
-        Olingan:
-        {todayPurchase.toLocaleString()} so'm
-      </p>
+      <div className="flex items-center gap-3 border px-3 py-2 rounded-3xl mt-10 mb-7 shadow-sm">
+        <Search className="w-5 text-gray-500" />
+        <input type="text" placeholder="Search..." />
+      </div>
 
-      <p>
-        To'langan:
-        {todayPayment.toLocaleString()} so'm
-      </p>
+      <div className="flex justify-between items-center mb-3 font-semibold">
+        <p>Firmalar ro'yxati</p>
+        <Link to="/firms" className="text-blue-500 text-[12px]">
+          Hammasi
+        </Link>
+      </div>
 
-      <hr />
-
-      <h2>Oylik statistika</h2>
-
-      <p>
-        Olingan:
-        {monthPurchase.toLocaleString()} so'm
-      </p>
-
-      <p>
-        To'langan:
-        {monthPayment.toLocaleString()} so'm
-      </p>
-
-      <hr />
-
-      <h2>Yillik statistika</h2>
-
-      <p>
-        Olingan:
-        {yearPurchase.toLocaleString()} so'm
-      </p>
-
-      <p>
-        To'langan:
-        {yearPayment.toLocaleString()} so'm
-      </p>
-    </div>
+      <div className="flex flex-col gap-3">
+        {firms?.map((item) => (
+          <Card
+            key={item.id}
+            className={"flex justify-between gap-3 w-full px-5 py-4"}
+          >
+            <div className="w-10 h-10 rounded-[15px] bg-gray-200 flex items-center justify-center text-xl font-semibold">
+              {getInitials(item.name)}
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div>
+                <CardTitle className={"font-bold"}>
+                  {capitalize(item.name)}
+                </CardTitle>
+                <p className="text-[10px]">
+                  {item.updatedAt.toDate().toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex flex-col items-end">
+                <p className="text-[18px] font-semibold">{item.balance}</p>
+                <p className="text-[10px]">
+                  {Math.floor((item.balance / item.totalPurchase) * 100)}%
+                </p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+      <button onClick={handleLogout}>Logout</button>
+      <div className="h-15.5"></div>
+    </Container>
   );
 };
 
