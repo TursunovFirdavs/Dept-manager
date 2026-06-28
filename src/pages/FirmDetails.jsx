@@ -9,10 +9,19 @@ import {
 } from "../services/transaction.service";
 
 import { Container } from "@/components/ui/container";
-import { Card, CardTitle } from "@/components/ui/card";
-import FormField from "@/components/FormField";
-import { ArrowLeft, PackagePlus, Banknote, Loader2 } from "lucide-react";
-import { formatDateUz } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  ArrowLeft,
+  MoreVertical,
+  PlusCircle,
+  MinusCircle,
+  ListFilter,
+  TrendingUp,
+  Loader2,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 const FirmDetails = () => {
@@ -22,7 +31,6 @@ const FirmDetails = () => {
 
   const [firm, setFirm] = useState(null);
   const [amount, setAmount] = useState("");
-  const [note, setNote] = useState("");
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,11 +62,10 @@ const FirmDetails = () => {
     }
     setIsLoading(true);
     try {
-      await addPurchase(user.uid, firmId, firm.name, Number(amount), note);
+      await addPurchase(user.uid, firmId, firm.name, Number(amount), "");
       await loadData();
       setAmount("");
-      setNote("");
-      toast.success("Tovar qo'shildi");
+      toast.success("Tovar qo'shildi (Yangi qarz)");
     } catch {
       toast.error("Xatolik yuz berdi");
     } finally {
@@ -73,10 +80,9 @@ const FirmDetails = () => {
     }
     setIsLoading(true);
     try {
-      await addPayment(user.uid, firmId, firm.name, Number(amount), note);
+      await addPayment(user.uid, firmId, firm.name, Number(amount), "");
       await loadData();
       setAmount("");
-      setNote("");
       toast.success("To'lov qilindi");
     } catch {
       toast.error("Xatolik yuz berdi");
@@ -85,167 +91,241 @@ const FirmDetails = () => {
     }
   };
 
+  const formatTime = (dateObj) => {
+    if (!dateObj) return "";
+    let hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const strMins = minutes < 10 ? "0" + minutes : minutes;
+    return `${hours}:${strMins} ${ampm}`;
+  };
+
+  const formatDate = (dateObj) => {
+    if (!dateObj) return "";
+    const monthNames = [
+      "Yan",
+      "Fev",
+      "Mar",
+      "Apr",
+      "May",
+      "Iyun",
+      "Iyul",
+      "Avg",
+      "Sen",
+      "Okt",
+      "Noy",
+      "Dek",
+    ];
+    return `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}, ${dateObj.getFullYear()}`;
+  };
+
   if (!firm) {
     return (
       <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-slate-800 dark:text-white" />
       </Container>
     );
   }
 
   return (
-    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen pb-20">
+    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen pb-24 font-sans px-4">
       {/* Header */}
-      <div className="flex items-center gap-3 py-5">
-        <button
+      <div className="flex items-center justify-between py-6">
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => navigate(-1)}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+          className="rounded-full w-10 h-10 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
         >
-          <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
-        </button>
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white capitalize">
-            {firm.name}
-          </h2>
-          <p className="text-[12px] text-slate-500 font-medium">
-            Firma tafsilotlari
-          </p>
-        </div>
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <h2 className="text-[19px] font-bold text-slate-900 dark:text-white truncate max-w-50">
+          {firm.name}
+        </h2>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full w-10 h-10 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+        >
+          <MoreVertical className="w-5 h-5" />
+        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <Card className="px-4 py-4 bg-blue-600 dark:bg-blue-700 text-white border-0 col-span-2 shadow-md">
-          <p className="text-[11px] font-medium text-blue-100 uppercase tracking-wide mb-1">
-            QOLDIQ QARZ
+      {/* Top Cards Section */}
+      <div className="grid grid-cols-2 gap-3 mb-8">
+        <Card className="bg-white dark:bg-[#121212] p-4 rounded-[18px] border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+            Umumiy Summa
           </p>
-          <p className="text-[28px] font-bold">
-            {firm.balance?.toLocaleString("fr-FR")}{" "}
-            <span className="text-base font-medium text-blue-200">UZS</span>
-          </p>
-        </Card>
-
-        <Card className="px-4 py-3 bg-white dark:bg-[#121212] border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase mb-1">
-            Jami tovar
-          </p>
-          <p className="text-[15px] font-bold text-slate-800 dark:text-slate-200">
+          <p className="text-[18px] font-extrabold text-slate-900 dark:text-white truncate">
             {firm.totalPurchase?.toLocaleString("fr-FR")}
           </p>
         </Card>
 
-        <Card className="px-4 py-3 bg-white dark:bg-[#121212] border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase mb-1">
-            Jami to'lov
+        <Card className="bg-white dark:bg-[#121212] p-4 rounded-[18px] border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+            Qilingan To'lov
           </p>
-          <p className="text-[15px] font-bold text-slate-800 dark:text-slate-200">
+          <p className="text-[18px] font-extrabold text-emerald-600 dark:text-emerald-500 truncate">
             {firm.totalPayment?.toLocaleString("fr-FR")}
+          </p>
+        </Card>
+
+        <Card className="col-span-2 bg-[#1a1f2c] dark:bg-[#151a25] p-5 rounded-[18px] border-0 shadow-md flex flex-col justify-center relative overflow-hidden">
+          <div className="absolute right-0 top-0 opacity-10 pointer-events-none">
+            <TrendingUp className="w-24 h-24 -mr-4 -mt-4 text-white" />
+          </div>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            Qoldiq Qarz
+          </p>
+          <p className="text-[28px] font-extrabold text-white truncate relative z-10">
+            {firm.balance?.toLocaleString("fr-FR")}{" "}
+            <span className="text-[14px] text-slate-500 font-medium">UZS</span>
           </p>
         </Card>
       </div>
 
-      {/* Action Form */}
-      <Card className="p-4 bg-white dark:bg-[#121212] border-slate-200 dark:border-slate-800 shadow-sm mb-8">
-        <CardTitle className="text-[15px] font-bold mb-4 text-slate-800 dark:text-slate-200">
-          Amaliyot bajarish
-        </CardTitle>
-        <div className="flex flex-col gap-3">
-          <FormField
-            type="number"
-            placeholder="Summani kiriting..."
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-          <FormField
-            type="text"
-            placeholder="Izoh (ixtiyoriy)..."
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-
-          <div className="grid grid-cols-2 gap-3 mt-2">
-            <button
-              onClick={handlePurchase}
-              disabled={isLoading}
-              className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white h-11 rounded-[10px] font-medium text-[14px] transition-colors disabled:opacity-70"
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <PackagePlus className="w-4 h-4" />
-              )}
-              Tovar olish
-            </button>
-            <button
-              onClick={handlePayment}
-              disabled={isLoading}
-              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white h-11 rounded-[10px] font-medium text-[14px] transition-colors disabled:opacity-70"
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Banknote className="w-4 h-4" />
-              )}
-              To'lov qilish
-            </button>
+      {/* Manage Ledger Section */}
+      <div className="mb-8">
+        <h3 className="text-[16px] font-bold text-[#1a1f2c] dark:text-white mb-3">
+          Amaliyot Bajarish
+        </h3>
+        <Card className="bg-white dark:bg-[#121212] p-5 rounded-[20px] border border-slate-100 dark:border-slate-800 shadow-sm">
+          <div className="mb-4">
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+              Summani kiriting
+            </Label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-[16px]">
+                UZS
+              </span>
+              <Input
+                type="number"
+                placeholder="0"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="pl-12 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[16px] font-medium placeholder:text-slate-300"
+              />
+            </div>
           </div>
-        </div>
-      </Card>
 
-      {/* History */}
-      <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200 mb-3 px-1">
-        Tranzaksiyalar tarixi
-      </h3>
-
-      <div className="flex flex-col gap-3">
-        {transactions.length === 0 ? (
-          <p className="text-center text-slate-500 text-sm py-5">
-            Hali tarix yo'q
-          </p>
-        ) : (
-          transactions.map((tx) => (
-            <Card
-              key={tx.id}
-              className="p-4 bg-white dark:bg-[#121212] border-slate-100 dark:border-slate-800/60 shadow-sm flex items-center justify-between"
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <Button
+              disabled={isLoading}
+              onClick={handlePurchase}
+              className="bg-black hover:bg-slate-900 dark:bg-white dark:text-black dark:hover:bg-slate-200 text-white rounded-full h-12 flex items-center justify-center gap-2 font-bold text-[13px] shadow-md transition-transform active:scale-95"
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "purchase" ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" : "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}
-                >
-                  {tx.type === "purchase" ? (
-                    <PackagePlus className="w-5 h-5" />
-                  ) : (
-                    <Banknote className="w-5 h-5" />
-                  )}
-                </div>
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <PlusCircle className="w-4.5 h-4.5" />
+              )}
+              TOVAR QO'SHISH
+            </Button>
+
+            <Button
+              variant="secondary"
+              disabled={isLoading}
+              onClick={handlePayment}
+              className="bg-blue-100/60 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full h-12 flex items-center justify-center gap-2 font-bold text-[13px] transition-transform active:scale-95"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <MinusCircle className="w-4.5 h-4.5" />
+              )}
+              TO'LOV QILISH
+            </Button>
+          </div>
+          <p className="text-center text-[11px] font-medium text-slate-500 italic px-2">
+            "To'lov qilganda qarzdan ayriladi; yangi tovar kelganda qarzga
+            qo'shiladi."
+          </p>
+        </Card>
+      </div>
+
+      {/* Transaction Ledger Section */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-[16px] font-bold text-[#1a1f2c] dark:text-white">
+            Tarix Daftar
+          </h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 text-[12px] font-medium"
+          >
+            <ListFilter className="w-3.5 h-3.5" />
+            Filtr
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {transactions.length === 0 ? (
+            <p className="text-center text-slate-500 text-sm py-8">
+              Hali hech qanday amaliyot yo'q
+            </p>
+          ) : (
+            transactions.map((tx) => (
+              <Card
+                key={tx.id}
+                className="bg-white dark:bg-[#121212] p-4 rounded-[16px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
+              >
                 <div>
-                  <p className="text-[14px] font-bold text-slate-900 dark:text-slate-100">
-                    {tx.type === "purchase" ? "Tovar olindi" : "To'lov qilindi"}
+                  <p className="text-[14px] font-bold text-slate-900 dark:text-slate-100 mb-0.5">
+                    {tx.type === "purchase"
+                      ? "Yangi Tovar - Qarz"
+                      : "Qisman to'lov - Naqd"}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-[11px] font-medium text-slate-500">
                     {tx.createdAt?.toDate
-                      ? formatDateUz(tx.createdAt.toDate())
+                      ? `${formatDate(tx.createdAt.toDate())} - ${formatTime(tx.createdAt.toDate())}`
                       : "Sana yo'q"}
                   </p>
-                  {tx.note && (
-                    <p className="text-[12px] text-slate-600 dark:text-slate-400 mt-1">
-                      {tx.note}
-                    </p>
-                  )}
                 </div>
-              </div>
-              <div className="text-right">
-                <p
-                  className={`text-[15px] font-bold ${tx.type === "purchase" ? "text-slate-900 dark:text-white" : "text-blue-600 dark:text-blue-400"}`}
-                >
-                  {tx.type === "purchase" ? "+" : "-"}
-                  {tx.amount?.toLocaleString("fr-FR")}
-                </p>
-              </div>
-            </Card>
-          ))
+                <div className="text-right">
+                  <p
+                    className={`text-[15px] font-bold ${tx.type === "purchase" ? "text-red-600 dark:text-red-500" : "text-blue-600 dark:text-teal-500"}`}
+                  >
+                    {tx.type === "purchase" ? "+" : "-"}
+                    {tx.amount?.toLocaleString("fr-FR")}
+                  </p>
+                  <p className="text-[10px] font-medium text-slate-400 mt-0.5">
+                    {tx.type === "purchase"
+                      ? "Qarz ko'paydi"
+                      : "To'lov qabul qilindi"}
+                  </p>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {transactions.length > 0 && (
+          <Button
+            variant="ghost"
+            className="w-full mt-4 text-[12px] font-bold text-slate-500 uppercase tracking-wider h-12 rounded-[14px]"
+          >
+            Eskiroq tarixni yuklash
+          </Button>
         )}
       </div>
+
+      {/* Outlook Card (Bottom) */}
+      <Card className="bg-black p-5 rounded-[20px] shadow-lg mb-8 text-white">
+        <div className="flex items-center gap-3 mb-3">
+          <TrendingUp className="w-5 h-5 text-blue-400" />
+          <h4 className="text-[15px] font-bold">Firma Holati</h4>
+        </div>
+        <p className="text-[12px] text-slate-300 leading-relaxed font-medium">
+          Hozirgi to'lovlar grafigiga ko'ra, siz{" "}
+          <span className="text-white font-bold">{firm.name}</span> bilan
+          bo'lgan qarzlaringizni muntazam ravishda to'lab bormoqdasiz. To'lovni
+          o'z vaqtida qilish ishonchni oshiradi.
+        </p>
+      </Card>
     </Container>
   );
 };
