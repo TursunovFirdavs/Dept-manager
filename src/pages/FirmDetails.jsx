@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   ArrowLeft,
   MoreVertical,
@@ -33,6 +34,13 @@ const FirmDetails = () => {
   const [amount, setAmount] = useState("");
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [filterType, setFilterType] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const handleSelectFilter = (type) => {
+    setFilterType(type);
+    setIsFilterOpen(false);
+  };
 
   const loadData = async () => {
     try {
@@ -121,6 +129,11 @@ const FirmDetails = () => {
     return `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}, ${dateObj.getFullYear()}`;
   };
 
+  const filteredTransactions = transactions.filter((tx) => {
+    if (filterType === "all") return true;
+    return tx.type === filterType;
+  });
+
   if (!firm) {
     return (
       <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen flex items-center justify-center">
@@ -194,19 +207,15 @@ const FirmDetails = () => {
         </h3>
         <Card className="bg-white dark:bg-[#121212] p-5 rounded-[20px] border border-slate-100 dark:border-slate-800 shadow-sm">
           <div className="mb-4">
-            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
-              Summani kiriting
-            </Label>
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Summani kiriting</Label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-[16px]">
-                UZS
-              </span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-[14px]">UZS</span>
               <Input
                 type="number"
                 placeholder="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="pl-12 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[16px] font-medium placeholder:text-slate-300"
+                className="pl-4 pr-14 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[16px] font-medium placeholder:text-slate-300"
               />
             </div>
           </div>
@@ -250,25 +259,68 @@ const FirmDetails = () => {
       <div className="mb-6">
         <div className="flex justify-between items-center mb-3">
           <h3 className="text-[16px] font-bold text-[#1a1f2c] dark:text-white">
-            Tarix Daftar
+            Arxiv
           </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 text-[12px] font-medium"
-          >
-            <ListFilter className="w-3.5 h-3.5" />
-            Filtr
-          </Button>
+          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 gap-1.5 text-[12px] font-medium ${
+                  filterType !== "all"
+                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                    : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
+                }`}
+              >
+                <ListFilter className="w-3.5 h-3.5" />
+                Filtr {filterType !== "all" && "•"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="w-44 p-1.5 rounded-[14px] shadow-lg border-slate-100 dark:border-slate-800 bg-white dark:bg-[#121212]"
+            >
+              <button
+                onClick={() => handleSelectFilter("all")}
+                className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                  filterType === "all"
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                }`}
+              >
+                Barchasi
+              </button>
+              <button
+                onClick={() => handleSelectFilter("purchase")}
+                className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                  filterType === "purchase"
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                }`}
+              >
+                Yangi Tovar - Qarz
+              </button>
+              <button
+                onClick={() => handleSelectFilter("payment")}
+                className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                  filterType === "payment"
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                }`}
+              >
+                To'lov - Naqd
+              </button>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="flex flex-col gap-3">
-          {transactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <p className="text-center text-slate-500 text-sm py-8">
               Hali hech qanday amaliyot yo'q
             </p>
           ) : (
-            transactions.map((tx) => (
+            filteredTransactions.map((tx) => (
               <Card
                 key={tx.id}
                 className="bg-white dark:bg-[#121212] p-4 rounded-[16px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
@@ -313,19 +365,7 @@ const FirmDetails = () => {
         )}
       </div>
 
-      {/* Outlook Card (Bottom) */}
-      <Card className="bg-black p-5 rounded-[20px] shadow-lg mb-8 text-white">
-        <div className="flex items-center gap-3 mb-3">
-          <TrendingUp className="w-5 h-5 text-blue-400" />
-          <h4 className="text-[15px] font-bold">Firma Holati</h4>
-        </div>
-        <p className="text-[12px] text-slate-300 leading-relaxed font-medium">
-          Hozirgi to'lovlar grafigiga ko'ra, siz{" "}
-          <span className="text-white font-bold">{firm.name}</span> bilan
-          bo'lgan qarzlaringizni muntazam ravishda to'lab bormoqdasiz. To'lovni
-          o'z vaqtida qilish ishonchni oshiradi.
-        </p>
-      </Card>
+     
     </Container>
   );
 };
