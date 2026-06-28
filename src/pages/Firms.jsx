@@ -29,16 +29,9 @@ const FirmsPage = () => {
   };
 
   return (
-    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen pb-24 font-sans px-4">
-      {/* Header */}
-      <div className="flex items-center gap-3 py-6">
-        <h2 className="text-[20px] font-bold text-slate-900 dark:text-white">
-          Barcha Firmalar
-        </h2>
-      </div>
-
+    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] pb-24 font-sans px-4">
       {/* Add Firm Section */}
-      <div className="mb-6">
+      <div className="my-6">
         <p className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2 pl-1">
           Yangi Firma Qo'shish
         </p>
@@ -64,7 +57,6 @@ const FirmsPage = () => {
           </Button>
         </form>
       </div>
-
       {/* Search Section */}
       <div className="relative flex items-center gap-3 bg-white dark:bg-[#121212] border border-slate-200 dark:border-slate-800 px-4 py-3.5 rounded-[14px] mb-6 shadow-sm">
         <Search className="w-5 h-5 text-slate-400" />
@@ -76,7 +68,6 @@ const FirmsPage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-
       {/* Firms List */}
       <div>
         <div className="flex justify-between items-center mb-4 px-1">

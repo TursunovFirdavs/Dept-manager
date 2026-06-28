@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { logoutUser } from "@/services/auth.service";
-import { Bell, Search, LogOut } from "lucide-react";
+import { Search } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Link, useNavigate } from "react-router-dom";
 import { useFirms } from "@/hooks/useFirms";
@@ -18,28 +17,13 @@ const DashboardPage = () => {
   
   const totalPaymentPercent = totalDebt > 0 ? (totalPayment / totalDebt) * 100 : 0;
 
-  const handleLogout = async () => {
-    await logoutUser();
-  };
 
   return (
-    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen">
+    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18]">
       <div className="flex items-center justify-between py-5 px-1">
         <div>
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">MOLIYAVIY HISOB</p>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Savdo daftar</h2>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-            <Bell className="w-[18px] text-slate-600 dark:text-slate-300" />
-          </div>
-          <button 
-            onClick={handleLogout}
-            className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
-            title="Tizimdan chiqish"
-          >
-            <LogOut className="w-[18px] h-[18px]" strokeWidth={2.5} />
-          </button>
         </div>
       </div>
 

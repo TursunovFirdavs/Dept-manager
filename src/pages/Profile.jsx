@@ -1,20 +1,13 @@
 import { useAuthStore } from "../store/authStore";
 import { logoutUser } from "../services/auth.service";
-import {
-  Pencil,
-  Moon,
-  Headphones,
-  LogOut,
-  Bell,
-  HelpCircle,
-} from "lucide-react";
+import { Pencil, Moon, Headphones, LogOut } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 import { Card } from "@/components/ui/card";
 import { SubscriptionCard } from "@/components/profile/SubscriptionCard";
 import { ProfileMenuItem } from "@/components/profile/ProfileMenuItem";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ProfilePage = () => {
   const { userData } = useAuthStore();
@@ -40,30 +33,7 @@ const ProfilePage = () => {
   const firmCount = userData?.firmCount || 0;
 
   return (
-    <div className="h-dvh overflow-y-auto overflow-x-hidden bg-[#fafafa] dark:bg-[#0a0a0a] flex flex-col font-sans">
-      {/* Header */}
-      <header className="w-full px-6 py-6 flex justify-between items-start shrink-0">
-        <h1 className="text-[17px] font-semibold text-slate-900 dark:text-white leading-snug">
-          Subscription
-          <br />
-          Manager
-        </h1>
-        <div className="flex items-center gap-4 text-blue-600 dark:text-blue-400">
-          <button
-            aria-label="Notifications"
-            className="transition-opacity hover:opacity-70 cursor-pointer"
-          >
-            <Bell size={20} strokeWidth={2.5} />
-          </button>
-          <button
-            aria-label="Help"
-            className="transition-opacity hover:opacity-70 cursor-pointer"
-          >
-            <HelpCircle size={20} strokeWidth={2.5} />
-          </button>
-        </div>
-      </header>
-
+    <div className="flex flex-col font-sans">
       {/* Main Content Area */}
       <main className="flex-1 w-full flex flex-col items-center px-4 pb-6">
         <div className="w-full max-w-100 flex flex-col items-center">

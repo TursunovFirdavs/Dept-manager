@@ -13,7 +13,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   ArrowLeft,
   MoreVertical,
@@ -136,27 +140,29 @@ const FirmDetails = () => {
 
   if (!firm) {
     return (
-      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen flex items-center justify-center">
+      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-800 dark:text-white" />
       </Container>
     );
   }
 
   return (
-    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen pb-24 font-sans px-4">
+    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] pb-24 font-sans px-4">
       {/* Header */}
       <div className="flex items-center justify-between py-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate(-1)}
-          className="rounded-full w-10 h-10 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h2 className="text-[19px] font-bold text-slate-900 dark:text-white truncate max-w-50">
-          {firm.name}
-        </h2>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="rounded-full w-10 h-10 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h2 className="text-[19px] font-bold text-slate-900 dark:text-white truncate max-w-50">
+            {firm.name}
+          </h2>
+        </div>
         <Button
           variant="ghost"
           size="icon"
@@ -187,8 +193,8 @@ const FirmDetails = () => {
         </Card>
 
         <Card className="col-span-2 bg-[#1a1f2c] dark:bg-[#151a25] p-5 rounded-[18px] border-0 shadow-md flex flex-col justify-center relative overflow-hidden">
-          <div className="absolute right-0 top-0 opacity-10 pointer-events-none">
-            <TrendingUp className="w-24 h-24 -mr-4 -mt-4 text-white" />
+          <div className="absolute right-0 top-0 opacity-50 pointer-events-none">
+            <TrendingUp className="w-24 h-24 mr-1 -mt-2 text-green-600" />
           </div>
           <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
             Qoldiq Qarz
@@ -207,9 +213,13 @@ const FirmDetails = () => {
         </h3>
         <Card className="bg-white dark:bg-[#121212] p-5 rounded-[20px] border border-slate-100 dark:border-slate-800 shadow-sm">
           <div className="mb-4">
-            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Summani kiriting</Label>
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+              Summani kiriting
+            </Label>
             <div className="relative">
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-[14px]">UZS</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-[14px]">
+                UZS
+              </span>
               <Input
                 type="number"
                 placeholder="0"
@@ -364,8 +374,6 @@ const FirmDetails = () => {
           </Button>
         )}
       </div>
-
-     
     </Container>
   );
 };

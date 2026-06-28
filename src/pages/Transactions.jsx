@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import {
-  Search,
   Loader2,
   Calendar as CalendarIcon,
   TrendingDown,
@@ -164,22 +163,7 @@ const Transactions = () => {
   }
 
   return (
-    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen pb-24 font-sans relative">
-      {/* Header */}
-      <div className="flex items-center justify-between py-6 px-1">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md border-2 border-slate-900 dark:border-white flex items-center justify-center">
-            <div className="w-3 h-3 bg-slate-900 dark:bg-white rounded-sm"></div>
-          </div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Savdo daftar
-          </h2>
-        </div>
-        <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
-          <Search className="w-5 h-5 text-slate-700 dark:text-slate-300" />
-        </button>
-      </div>
-
+    <Container className="pb-24 font-sans px-4 relative mt-6">
       {/* Viewing Range Card */}
       <Card className="bg-white dark:bg-[#121212] p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm mb-4">
         <div className="flex justify-between items-center">
@@ -247,11 +231,11 @@ const Transactions = () => {
 
       {/* Total Movement Card */}
       <Card className="bg-[#1a1f2c] dark:bg-[#151a25] p-5 rounded-3xl border-0 shadow-lg mb-4 text-white relative overflow-hidden">
-        <div className="absolute right-4 top-4 opacity-20">
+        <div className="absolute right-4 top-4 opacity-60">
           {totalMovement >= 0 ? (
-            <TrendingUp className="w-10 h-10" />
+            <TrendingUp className="w-10 h-10 text-green-600" />
           ) : (
-            <TrendingDown className="w-10 h-10" />
+            <TrendingDown className="w-10 h-10 text-red-500" />
           )}
         </div>
         <p className="text-[11px] font-medium text-slate-400 mb-1">

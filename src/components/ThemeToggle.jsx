@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Moon, Sun } from "lucide-react";
 
-export const ThemeToggle = () => {
+const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -9,7 +10,6 @@ export const ThemeToggle = () => {
   }, []);
 
   const toggleDarkMode = (e) => {
-    // Agar onCLick event orqali kelayotgan bo'lsa propagation to'xtatish
     if (e) e.stopPropagation();
 
     const newDark = !isDark;
@@ -28,11 +28,15 @@ export const ThemeToggle = () => {
       type="button"
       onClick={toggleDarkMode}
       aria-label="Toggle Dark Mode"
-      className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${isDark ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-700"}`}
+      className="cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-[#121212] shadow-sm border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
     >
-      <span
-        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${isDark ? "translate-x-5.5" : "translate-x-0.5"}`}
-      />
+      {isDark ? (
+        <Moon className="w-4.5 h-4.5" />
+      ) : (
+        <Sun className="w-4.5 h-4.5 text-amber-500" />
+      )}
     </button>
   );
 };
+
+export default ThemeToggle;

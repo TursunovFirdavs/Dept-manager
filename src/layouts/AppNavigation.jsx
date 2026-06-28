@@ -3,47 +3,65 @@ import {
   History,
   House,
   NotebookTabs,
+  User
 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const AppNavigation = () => {
+  const location = useLocation();
+
   return (
     <div
-      className="
-    fixed bottom-0 w-full bg-accent
-    lg:left-0 lg:top-0 lg:h-screen lg:w-64
-  "
+      className="fixed bottom-0 w-full bg-white dark:bg-[#121212] border-t border-slate-200 dark:border-slate-800 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] md:hidden z-50 pb-safe"
     >
       <div className="flex flex-col h-full">
         <div className="flex-1">
-          <nav className="flex justify-between pb-3 pt-2 px-1">
-            <a
-              href="/dashboard"
-              className="px-4 hover:bg-gray-100 flex flex-col items-center justify-center text-[12px]"
+          <nav className="flex justify-around items-center pb-2 pt-3 px-1">
+            <Link
+              to="/dashboard"
+              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                location.pathname === "/dashboard" ? "text-blue-600 dark:text-blue-500" : "text-slate-500 dark:text-slate-400"
+              }`}
             >
-              <House />
+              <House className="w-6 h-6" />
               Asosiy
-            </a>
-            <a
-              href="/firms"
-              className="px-4 hover:bg-gray-100 flex flex-col items-center justify-center text-[12px]"
+            </Link>
+            <Link
+              to="/firms"
+              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                location.pathname.startsWith("/firms") ? "text-blue-600 dark:text-blue-500" : "text-slate-500 dark:text-slate-400"
+              }`}
             >
-              <NotebookTabs />
+              <NotebookTabs className="w-6 h-6" />
               Firmalar
-            </a>
-            <a
-              href="/transactions"
-              className="px-4 hover:bg-gray-100 flex flex-col items-center justify-center text-[12px]"
+            </Link>
+            <Link
+              to="/transactions"
+              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                location.pathname === "/transactions" ? "text-blue-600 dark:text-blue-500" : "text-slate-500 dark:text-slate-400"
+              }`}
             >
-              <History />
+              <History className="w-6 h-6" />
               Arxiv
-            </a>
-            <a
-              href="/calendar"
-              className="px-4 hover:bg-gray-100 flex flex-col items-center justify-center text-[12px]"
+            </Link>
+            <Link
+              to="/calendar"
+              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                location.pathname === "/calendar" ? "text-blue-600 dark:text-blue-500" : "text-slate-500 dark:text-slate-400"
+              }`}
             >
-              <ChartNoAxesCombined />
+              <ChartNoAxesCombined className="w-6 h-6" />
               Statistika
-            </a>
+            </Link>
+            <Link
+              to="/profile"
+              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                location.pathname === "/profile" ? "text-blue-600 dark:text-blue-500" : "text-slate-500 dark:text-slate-400"
+              }`}
+            >
+              <User className="w-6 h-6" />
+              Profil
+            </Link>
           </nav>
         </div>
       </div>
