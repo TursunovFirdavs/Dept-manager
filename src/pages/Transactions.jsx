@@ -3,8 +3,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Loader2,
   Calendar as CalendarIcon,
   TrendingDown,
   TrendingUp,
@@ -156,8 +156,18 @@ const Transactions = () => {
 
   if (isLoading) {
     return (
-      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] p-4 flex flex-col gap-6">
+        <Skeleton className="h-[200px] w-full rounded-2xl" />
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-32 rounded-xl" />
+          <Skeleton className="h-10 w-32 rounded-xl" />
+        </div>
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-[80px] w-full rounded-2xl" />
+          <Skeleton className="h-[80px] w-full rounded-2xl" />
+          <Skeleton className="h-[80px] w-full rounded-2xl" />
+          <Skeleton className="h-[80px] w-full rounded-2xl" />
+        </div>
       </Container>
     );
   }

@@ -1,5 +1,5 @@
 import { Container } from "@/components/ui/container";
-import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useStatistics } from "@/hooks/useStatistics";
 import { StatTabs } from "@/components/statistics/StatTabs";
 import { StatCard } from "@/components/statistics/StatCard";
@@ -17,8 +17,22 @@ const StatisticsPage = () => {
 
   if (isLoading) {
     return (
-      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-slate-800 dark:text-white" />
+      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] pb-24 font-sans px-4 md:px-8 p-4 flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row justify-between gap-4 py-6">
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-56" />
+          </div>
+          <Skeleton className="h-10 w-full md:w-[350px] rounded-xl" />
+        </div>
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <Skeleton className="flex-1 h-[120px] rounded-2xl" />
+          <Skeleton className="flex-1 h-[120px] rounded-2xl" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-[300px] rounded-2xl" />
+          <Skeleton className="h-[300px] rounded-2xl" />
+        </div>
       </Container>
     );
   }

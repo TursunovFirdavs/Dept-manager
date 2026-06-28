@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import { useDataStore } from "../store/dataStore";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Plus, Loader2 } from "lucide-react";
 import { useFirms } from "@/hooks/useFirms";
 import FirmCard from "@/components/FirmCard";
 
 const FirmsPage = () => {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const { firms, isFirmsLoading: loading, fetchFirms } = useDataStore();
+  
   const {
     filteredFirms,
     searchQuery,
@@ -20,6 +26,12 @@ const FirmsPage = () => {
 
   const [newFirmName, setNewFirmName] = useState("");
 
+  useEffect(() => {
+    if (user) {
+      fetchFirms(user.uid);
+    }
+  }, [user, fetchFirms]);
+
   const onAddFirm = async (e) => {
     e.preventDefault();
     const success = await handleCreateFirm(newFirmName);
@@ -27,6 +39,20 @@ const FirmsPage = () => {
       setNewFirmName("");
     }
   };
+
+  if (loading) {
+    return (
+      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] pb-24 font-sans px-4 p-4 flex flex-col gap-6">
+        <Skeleton className="h-12 w-full rounded-2xl" />
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-[88px] w-full rounded-2xl" />
+          <Skeleton className="h-[88px] w-full rounded-2xl" />
+          <Skeleton className="h-[88px] w-full rounded-2xl" />
+          <Skeleton className="h-[88px] w-full rounded-2xl" />
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] pb-24 font-sans px-4">

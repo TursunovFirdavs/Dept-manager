@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { getAllTransactions } from '@/services/transaction.service';
+import { getTransactionsByDateRange } from '@/services/transaction.service';
 import { useAuthStore } from '@/store/authStore';
 
 export const useStatistics = () => {
@@ -11,10 +11,31 @@ export const useStatistics = () => {
 
   useEffect(() => {
     if (!user) return;
+
     const load = async () => {
       setIsLoading(true);
       try {
-        const data = await getAllTransactions(user.uid);
+        const now = new Date();
+        let start = new Date();
+        let end = new Date();
+
+        if (filterType === 'custom' && selectedDate) {
+          start = new Date(selectedDate);
+          start.setHours(0, 0, 0, 0);
+          end = new Date(selectedDate);
+          end.setHours(23, 59, 59, 999);
+        } else if (filterType === 'daily') {
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+        } else if (filterType === 'monthly') {
+          start = new Date(now.getFullYear(), now.getMonth(), 1);
+          end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        } else if (filterType === 'yearly') {
+          start = new Date(now.getFullYear(), 0, 1);
+          end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        }
+
+        const data = await getTransactionsByDateRange(user.uid, start, end);
         setTransactions(data);
       } catch (error) {
         console.error("Tranzaksiyalarni yuklashda xatolik:", error);
@@ -22,39 +43,12 @@ export const useStatistics = () => {
         setIsLoading(false);
       }
     };
+
     load();
-  }, [user]);
+  }, [user, filterType, selectedDate]);
 
-  const filteredData = useMemo(() => {
-    const now = new Date();
-    const currentDay = now.getDate();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    return transactions.filter((tx) => {
-      // Handle Firebase Timestamp or standard Date string
-      const date = tx.createdAt?.toDate ? tx.createdAt.toDate() : new Date(tx.createdAt);
-      if (!date || isNaN(date.getTime())) return false;
-
-      // Agar aynan bitta sana tanlangan bo'lsa (custom)
-      if (filterType === 'custom' && selectedDate) {
-        return date.getDate() === selectedDate.getDate() && 
-               date.getMonth() === selectedDate.getMonth() && 
-               date.getFullYear() === selectedDate.getFullYear();
-      }
-
-      if (filterType === 'daily') {
-        return date.getDate() === currentDay && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-      }
-      if (filterType === 'monthly') {
-        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-      }
-      if (filterType === 'yearly') {
-        return date.getFullYear() === currentYear;
-      }
-      return true;
-    });
-  }, [transactions, filterType, selectedDate]);
+  // Biz backenddan allaqachon filtrlangan ma'lumotni oldik, shuning uchun filteredData shunchaki transactions ning o'zi
+  const filteredData = transactions;
 
   // Aggregate stats
   const stats = useMemo(() => {

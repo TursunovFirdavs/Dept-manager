@@ -7,6 +7,8 @@ import {
   query,
   orderBy,
   getDocs,
+  limit,
+  where,
 } from "firebase/firestore";
 
 import { db } from "../firebase/firestore";
@@ -85,6 +87,7 @@ export const getTransactions = async (uid, firmId) => {
   const q = query(
     collection(db, "users", uid, "firms", firmId, "transactions"),
     orderBy("createdAt", "desc"),
+    limit(50)
   );
 
   const snapshot = await getDocs(q);
@@ -99,6 +102,23 @@ export const getAllTransactions = async (uid) => {
   const q = query(
     collection(db, "users", uid, "transactions"),
     orderBy("createdAt", "desc"),
+    limit(100)
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
+export const getTransactionsByDateRange = async (uid, startDate, endDate) => {
+  const q = query(
+    collection(db, "users", uid, "transactions"),
+    where("createdAt", ">=", startDate),
+    where("createdAt", "<=", endDate),
+    orderBy("createdAt", "desc")
   );
 
   const snapshot = await getDocs(q);
