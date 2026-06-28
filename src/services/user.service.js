@@ -11,57 +11,47 @@ import {
 
 import { db } from "../firebase/firestore";
 
-export const createUserIfNotExists = async (user) => {
+export const getOrCreateUser = async (user) => {
   const ref = doc(db, "users", user.uid);
-
   const snapshot = await getDoc(ref);
 
   if (!snapshot.exists()) {
-    await setDoc(ref, {
+    const newUserData = {
       uid: user.uid,
-
       role: "user",
-
       status: "active",
-
       ownerName: "",
-
       shopName: "",
-
       phone: "",
-
       firmCount: 0,
-
       totalDebt: 0,
-
       totalPurchase: 0,
-
       totalPayment: 0,
-
       subscription: {
         plan: "trial",
-
         status: "active",
-
         startDate: serverTimestamp(),
-
         endDate: null,
       },
-
       createdAt: serverTimestamp(),
-
       updatedAt: serverTimestamp(),
-    });
+    };
+    
+    await setDoc(ref, newUserData);
+    return { id: user.uid, ...newUserData };
   }
+
+  return {
+    id: snapshot.id,
+    ...snapshot.data(),
+  };
 };
 
 export const getUserData = async (uid) => {
   const snapshot = await getDoc(doc(db, "users", uid));
-
   if (!snapshot.exists()) {
     return null;
   }
-
   return {
     id: snapshot.id,
     ...snapshot.data(),
