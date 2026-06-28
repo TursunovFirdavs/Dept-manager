@@ -4,7 +4,7 @@ import { getFirms } from "../services/firm.service";
 
 import { Card, CardTitle } from "@/components/ui/card";
 import { logoutUser } from "@/services/auth.service";
-import { Bell, Search } from "lucide-react";
+import { Search, User } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Link } from "react-router-dom";
 
@@ -13,14 +13,15 @@ const DashboardPage = () => {
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
+    if (!user?.uid) return;
+
     const loadDashboard = async () => {
       const firmsData = await getFirms(user.uid);
-
       setFirms(firmsData);
     };
 
     loadDashboard();
-  }, []);
+  }, [user?.uid]);
 
   const totalDebt = firms.reduce((sum, firm) => sum + (firm.balance || 0), 0);
   const totalPayment = firms.reduce(
@@ -52,9 +53,12 @@ const DashboardPage = () => {
           <p className="text-[10px] font-semibold">FINANCIAL</p>
           <h2 className="text-2xl font-bold">DeptFlow</h2>
         </div>
-        <div className="bg-gray-200 w-9 h-9 flex items-center justify-center rounded-full">
-          <Bell className="w-5" />
-        </div>
+        <Link
+          to="/profile"
+          className="bg-gray-400 w-9 h-9 flex items-center justify-center rounded-full"
+        >
+          <User className="w-5" />
+        </Link>
       </div>
 
       <Card className={"px-4"}>

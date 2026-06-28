@@ -7,15 +7,15 @@ const Transactions = () => {
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
+    if (!user?.uid) return;
+
     const loadData = async () => {
       const transactions = await getAllTransactions(user.uid);
-
       setTransactions(transactions);
     };
 
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.uid]);
 
   const today = new Date();
 

@@ -77,7 +77,7 @@ const ProfileEdit = () => {
 
       {/* Main Form Area */}
       <main className="flex-1 w-full flex flex-col items-center px-4 py-6">
-        <div className="w-full max-w-[400px]">
+        <div className="w-full max-w-100">
           
           <Card className="w-full rounded-xl shadow-sm border-slate-200 dark:border-slate-800 bg-white dark:bg-card overflow-hidden">
             <CardContent className="p-5">

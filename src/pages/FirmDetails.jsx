@@ -28,7 +28,7 @@ const FirmDetails = () => {
   };
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.uid) return;
 
     const fetchData = async () => {
       await loadData();
@@ -36,7 +36,7 @@ const FirmDetails = () => {
 
     fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, firmId]);
+  }, [user?.uid, firmId]);
 
   if (!firm) {
     return <h2>Loading...</h2>;

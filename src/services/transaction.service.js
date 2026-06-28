@@ -1,8 +1,7 @@
 import {
   collection,
-  addDoc,
   doc,
-  updateDoc,
+  writeBatch,
   increment,
   serverTimestamp,
   query,
@@ -13,59 +12,73 @@ import {
 import { db } from "../firebase/firestore";
 
 export const addPurchase = async (uid, firmId, firmName, amount, note = "") => {
+  const batch = writeBatch(db);
+  
   const txData = {
     firmId,
     firmName,
-
     type: "purchase",
     amount,
     note,
-
     createdAt: serverTimestamp(),
   };
 
-  // Firma ichidagi transaction
+  // 1. Firma ichidagi transaction
+  const firmTxRef = doc(collection(db, "users", uid, "firms", firmId, "transactions"));
+  batch.set(firmTxRef, txData);
 
-  await addDoc(
-    collection(db, "users", uid, "firms", firmId, "transactions"),
-    txData,
-  );
+  // 2. Global ledger
+  const globalTxRef = doc(collection(db, "users", uid, "transactions"));
+  batch.set(globalTxRef, txData);
 
-  // Global ledger
-
-  await addDoc(collection(db, "users", uid, "transactions"), txData);
-
-  // Firm hisobini yangilash
-
-  await updateDoc(doc(db, "users", uid, "firms", firmId), {
+  // 3. Firm hisobini yangilash
+  const firmRef = doc(db, "users", uid, "firms", firmId);
+  batch.update(firmRef, {
     balance: increment(amount),
     totalPurchase: increment(amount),
   });
+
+  // 4. Foydalanuvchining umumiy hisobini (global datani) yangilash
+  const userRef = doc(db, "users", uid);
+  batch.update(userRef, {
+    totalDebt: increment(amount),
+    totalPurchase: increment(amount),
+  });
+
+  await batch.commit();
 };
 
 export const addPayment = async (uid, firmId, firmName, amount, note = "") => {
+  const batch = writeBatch(db);
+
   const txData = {
     firmId,
     firmName,
-
     type: "payment",
     amount,
     note,
-
     createdAt: serverTimestamp(),
   };
 
-  await addDoc(
-    collection(db, "users", uid, "firms", firmId, "transactions"),
-    txData,
-  );
+  const firmTxRef = doc(collection(db, "users", uid, "firms", firmId, "transactions"));
+  batch.set(firmTxRef, txData);
 
-  await addDoc(collection(db, "users", uid, "transactions"), txData);
+  const globalTxRef = doc(collection(db, "users", uid, "transactions"));
+  batch.set(globalTxRef, txData);
 
-  await updateDoc(doc(db, "users", uid, "firms", firmId), {
+  const firmRef = doc(db, "users", uid, "firms", firmId);
+  batch.update(firmRef, {
     balance: increment(-amount),
     totalPayment: increment(amount),
   });
+
+  const userRef = doc(db, "users", uid);
+  batch.update(userRef, {
+    totalDebt: increment(-amount),
+    totalPayment: increment(amount),
+  });
+
+  await batch.commit();
 };
 
 export const getTransactions = async (uid, firmId) => {
