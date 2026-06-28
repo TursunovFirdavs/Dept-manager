@@ -1,157 +1,187 @@
+/* eslint-disable react-hooks/static-components */
 import { getAllTransactions } from "@/services/transaction.service";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
+import { Container } from "@/components/ui/container";
+import { Card } from "@/components/ui/card";
+import { PackagePlus, Banknote, CalendarDays, Loader2 } from "lucide-react";
+import { formatDateUz } from "@/lib/utils";
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     if (!user?.uid) return;
 
     const loadData = async () => {
-      const transactions = await getAllTransactions(user.uid);
-      setTransactions(transactions);
+      try {
+        const data = await getAllTransactions(user.uid);
+        setTransactions(data);
+      } catch {
+        console.error("Xatolik");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadData();
   }, [user?.uid]);
 
   const today = new Date();
-
-  const todayPurchase = transactions
-    .filter((tx) => {
-      if (tx.type !== "purchase") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.toDateString() === today.toDateString();
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const todayPayment = transactions
-    .filter((tx) => {
-      if (tx.type !== "payment") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.toDateString() === today.toDateString();
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
-  const monthPurchase = transactions
-    .filter((tx) => {
-      if (tx.type !== "purchase") return false;
+  // Helper function to safely process dates
+  const isToday = (date) =>
+    date && date.toDateString() === today.toDateString();
+  const isThisMonth = (date) =>
+    date &&
+    date.getMonth() === currentMonth &&
+    date.getFullYear() === currentYear;
+  const isThisYear = (date) => date && date.getFullYear() === currentYear;
 
-      const date = tx.createdAt?.toDate();
+  const calculateStats = (filterFn) => {
+    return transactions.reduce(
+      (acc, tx) => {
+        const date = tx.createdAt?.toDate ? tx.createdAt.toDate() : null;
+        if (!filterFn(date)) return acc;
 
-      return (
-        date &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
-      );
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
+        if (tx.type === "purchase") acc.purchase += tx.amount;
+        if (tx.type === "payment") acc.payment += tx.amount;
+        return acc;
+      },
+      { purchase: 0, payment: 0 },
+    );
+  };
 
-  const monthPayment = transactions
-    .filter((tx) => {
-      if (tx.type !== "payment") return false;
+  const todayStats = calculateStats(isToday);
+  const monthStats = calculateStats(isThisMonth);
+  const yearStats = calculateStats(isThisYear);
 
-      const date = tx.createdAt?.toDate();
+  if (isLoading) {
+    return (
+      <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </Container>
+    );
+  }
 
-      return (
-        date &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
-      );
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const yearPurchase = transactions
-    .filter((tx) => {
-      if (tx.type !== "purchase") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.getFullYear() === currentYear;
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const yearPayment = transactions
-    .filter((tx) => {
-      if (tx.type !== "payment") return false;
-
-      const date = tx.createdAt?.toDate();
-
-      return date && date.getFullYear() === currentYear;
-    })
-    .reduce((sum, tx) => sum + tx.amount, 0);
-  return (
-    <div>
-      {transactions.map((tx) => (
-        <div
-          key={tx.id}
-          style={{
-            border: "1px solid #ddd",
-            padding: "10px",
-            marginBottom: "10px",
-          }}
-        >
-          <h4>{tx.firmName}</h4>
-
-          <p>
-            {tx.type === "purchase" ? "📦 Tovar olindi" : "💰 To'lov qilindi"}
+  const StatBlock = ({ title, purchase, payment }) => (
+    <Card className="p-4 bg-white dark:bg-[#121212] border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <CalendarDays className="w-4 h-4 text-slate-500" />
+        <h3 className="font-bold text-slate-800 dark:text-slate-200 text-[14px]">
+          {title}
+        </h3>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-medium mb-1">
+            Olingan tovar
           </p>
-
-          <p>Summa: {tx.amount}</p>
-
-          <p>Izoh: {tx.note}</p>
+          <p className="text-[14px] font-bold text-slate-900 dark:text-slate-100">
+            {purchase.toLocaleString("fr-FR")}
+          </p>
         </div>
-      ))}
+        <div>
+          <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">
+            Qilingan to'lov
+          </p>
+          <p className="text-[14px] font-bold text-blue-600 dark:text-blue-400">
+            {payment.toLocaleString("fr-FR")}
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
 
-      <h2>Bugungi statistika</h2>
+  return (
+    <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] min-h-screen pb-20 pt-6">
+      <div className="mb-6 px-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          Tranzaksiyalar
+        </h1>
+        <p className="text-slate-500 text-[13px] mt-1">
+          Barcha kirim va chiqimlar tarixi
+        </p>
+      </div>
 
-      <p>
-        Olingan:
-        {todayPurchase.toLocaleString()} so'm
-      </p>
+      <div className="flex flex-col gap-3 mb-8">
+        <StatBlock
+          title="Bugungi statistika"
+          purchase={todayStats.purchase}
+          payment={todayStats.payment}
+        />
+        <StatBlock
+          title="Joriy oydagi statistika"
+          purchase={monthStats.purchase}
+          payment={monthStats.payment}
+        />
+        <StatBlock
+          title="Joriy yildagi statistika"
+          purchase={yearStats.purchase}
+          payment={yearStats.payment}
+        />
+      </div>
 
-      <p>
-        To'langan:
-        {todayPayment.toLocaleString()} so'm
-      </p>
+      <h2 className="text-[15px] font-bold text-slate-800 dark:text-slate-200 mb-3 px-1">
+        Barcha amaliyotlar
+      </h2>
 
-      <hr />
-
-      <h2>Oylik statistika</h2>
-
-      <p>
-        Olingan:
-        {monthPurchase.toLocaleString()} so'm
-      </p>
-
-      <p>
-        To'langan:
-        {monthPayment.toLocaleString()} so'm
-      </p>
-
-      <hr />
-
-      <h2>Yillik statistika</h2>
-
-      <p>
-        Olingan:
-        {yearPurchase.toLocaleString()} so'm
-      </p>
-
-      <p>
-        To'langan:
-        {yearPayment.toLocaleString()} so'm
-      </p>
-    </div>
+      <div className="flex flex-col gap-3">
+        {transactions.length === 0 ? (
+          <p className="text-center text-slate-500 text-sm py-10">
+            Tarix topilmadi
+          </p>
+        ) : (
+          transactions.map((tx) => (
+            <Card
+              key={tx.id}
+              className="p-4 bg-white dark:bg-[#121212] border-slate-100 dark:border-slate-800/60 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "purchase" ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" : "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}
+                >
+                  {tx.type === "purchase" ? (
+                    <PackagePlus className="w-5 h-5" />
+                  ) : (
+                    <Banknote className="w-5 h-5" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-[14px] font-bold text-slate-900 dark:text-slate-100">
+                    {tx.firmName}
+                  </p>
+                  <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                    {tx.type === "purchase" ? "Tovar olindi" : "To'lov qilindi"}{" "}
+                    •{" "}
+                    {tx.createdAt?.toDate
+                      ? formatDateUz(tx.createdAt.toDate())
+                      : "Sana yo'q"}
+                  </p>
+                  {tx.note && (
+                    <p className="text-[12px] text-slate-600 dark:text-slate-400 mt-1">
+                      {tx.note}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="text-right">
+                <p
+                  className={`text-[15px] font-bold ${tx.type === "purchase" ? "text-slate-900 dark:text-white" : "text-blue-600 dark:text-blue-400"}`}
+                >
+                  {tx.type === "purchase" ? "+" : "-"}
+                  {tx.amount?.toLocaleString("fr-FR")}
+                </p>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+    </Container>
   );
 };
 
