@@ -1,44 +1,31 @@
 import { useEffect } from "react";
-
 import { observeAuth } from "../services/auth.service";
-
 import { useAuthStore } from "../store/authStore";
-
-import {
-  createUserIfNotExists,
-  expireSubscription,
-  getUserData,
-} from "../services/user.service";
+import { getOrCreateUser, expireSubscription } from "../services/user.service";
 
 export default function AuthProvider({ children }) {
   const setUser = useAuthStore((state) => state.setUser);
-
   const setToken = useAuthStore((state) => state.setToken);
-
   const setLoading = useAuthStore((state) => state.setLoading);
-
   const setUserData = useAuthStore((state) => state.setUserData);
 
   useEffect(() => {
     const unsub = observeAuth(async (user) => {
       if (user) {
-        const token = await user.getIdToken();
-
-        await createUserIfNotExists(user);
-
-        const userData = await getUserData(user.uid);
+        // Asosiy tezlashtirish: ikkalasini bitta qatorda parallel yuklaymiz!
+        const [token, userData] = await Promise.all([
+          user.getIdToken(),
+          getOrCreateUser(user)
+        ]);
 
         const endDate = userData?.subscription?.endDate;
 
         if (endDate) {
           const subscriptionEnd = endDate.toDate();
-          console.log(subscriptionEnd);
-
           const today = new Date();
 
           if (subscriptionEnd < today) {
-            await expireSubscription(user.uid);
-
+            expireSubscription(user.uid); // buni await qilish shart emas, backend o'zi to'g'irlaydi
             userData.subscription = {
               ...userData.subscription,
               status: "expired",
@@ -47,15 +34,11 @@ export default function AuthProvider({ children }) {
         }
 
         setUser(user);
-
         setToken(token);
-
         setUserData(userData);
       } else {
         setUser(null);
-
         setToken(null);
-
         setUserData(null);
       }
 

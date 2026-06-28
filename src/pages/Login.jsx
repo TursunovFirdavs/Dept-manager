@@ -35,7 +35,6 @@ const Login = () => {
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.message || "Xatolik yuz berdi");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -77,7 +76,7 @@ const Login = () => {
               icon={AtSign}
               id="email"
               type="email"
-              placeholder="name@company.com"
+              placeholder="name@gmile.com"
               error={errors.email}
               {...register("email")}
             />
@@ -113,18 +112,6 @@ const Login = () => {
               )}
             </Button>
           </form>
-
-          <div className="mt-7 pt-5 border-t border-slate-100 dark:border-slate-800/60 text-center">
-            <p className="text-[13px] text-slate-500 dark:text-slate-400">
-              Yangi foydalanuvchimisiz?{" "}
-              <a
-                href="#"
-                className="text-[#0f172a] dark:text-blue-400 font-semibold hover:underline"
-              >
-                Ro'yxatdan o'tish
-              </a>
-            </p>
-          </div>
         </div>
 
         {/* Footer */}
