@@ -6,7 +6,6 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/Login";
 import FirmsPage from "../pages/Firms";
 import FirmDetails from "../pages/FirmDetails";
-import CalendarPage from "../pages/Calendar";
 import AdminRoute from "./AdminRoute";
 import Admin from "../pages/Admin";
 import SubscriptionExpired from "../pages/SubscribtionExpired";
@@ -17,6 +16,7 @@ import DashboardPage from "@/pages/Dashboard";
 import ProfilePage from "@/pages/Profile";
 import ProfileEdit from "@/pages/ProfileEdit";
 import Transactions from "@/pages/Transactions";
+import StatisticsPage from "@/pages/Statistics";
 
 export const router = createBrowserRouter([
   {
@@ -53,12 +53,12 @@ export const router = createBrowserRouter([
         element: <FirmDetails />,
       },
       {
-        path: "/calendar",
-        element: <CalendarPage />,
-      },
-      {
         path: "/transactions",
         element: <Transactions />,
+      },
+      {
+        path: "/statistika",
+        element: <StatisticsPage />,
       },
       {
         path: "/admin",
