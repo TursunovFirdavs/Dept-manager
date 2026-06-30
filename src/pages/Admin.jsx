@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Shield } from "lucide-react";
+import { Search, Shield, CreditCard } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
 import AdminUserCard from "@/components/admin/AdminUserCard";
+import PaymentSettingsModal from "@/components/admin/PaymentSettingsModal";
 
 import {
   getUsers,
@@ -17,6 +19,7 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -87,17 +90,30 @@ const Admin = () => {
           </p>
         </div>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-          <Input
-            type="text"
-            placeholder="Do'kon nomi yoki UID orqali qidirish..."
-            className="pl-10 rounded-xl"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <Input
+              type="text"
+              placeholder="Do'kon nomi yoki UID orqali qidirish..."
+              className="pl-10 rounded-xl"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Button 
+            onClick={() => setIsSettingsOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl gap-2"
+          >
+            <CreditCard className="w-4 h-4" /> To'lov Sozlamalari
+          </Button>
         </div>
       </div>
+
+      <PaymentSettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+      />
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">

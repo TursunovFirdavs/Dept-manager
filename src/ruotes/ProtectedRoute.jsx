@@ -19,6 +19,10 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/blocked" replace />;
   }
 
+  if (userData?.role === "admin") {
+    return children;
+  }
+
   const endDate = userData?.subscription?.endDate?.toDate 
     ? userData.subscription.endDate.toDate() 
     : null;

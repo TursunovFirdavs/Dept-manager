@@ -17,6 +17,10 @@ const SubscriptionRoute = ({ children }) => {
     return <Navigate to="/login" />;
   }
 
+  if (userData?.role === "admin") {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const endDate = userData?.subscription?.endDate?.toDate 
     ? userData.subscription.endDate.toDate() 
     : null;

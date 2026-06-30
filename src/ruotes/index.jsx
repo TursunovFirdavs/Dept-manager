@@ -4,6 +4,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import Login from "../pages/Login";
+import Register from "../pages/Register";
 import FirmsPage from "../pages/Firms";
 import FirmDetails from "../pages/FirmDetails";
 import AdminRoute from "./AdminRoute";
@@ -31,6 +32,14 @@ export const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <Login />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "/register",
+        element: (
+          <PublicRoute>
+            <Register />
           </PublicRoute>
         ),
       },
