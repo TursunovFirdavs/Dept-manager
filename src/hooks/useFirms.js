@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { getFirms, createFirm } from "@/services/firm.service";
+import { addPurchase, addPayment } from "@/services/transaction.service";
 import toast from "react-hot-toast";
 
 export const useFirms = () => {
@@ -31,12 +32,23 @@ export const useFirms = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
 
-  const handleCreateFirm = async (name) => {
-    if (!name.trim()) return false;
+  const handleCreateFirm = async (firmData) => {
+    if (!firmData.name.trim()) return false;
     
     setIsCreating(true);
     try {
-      await createFirm(user.uid, { name: name.trim() });
+      const docRef = await createFirm(user.uid, firmData);
+      
+      const debt = Number(firmData.initialDebt) || 0;
+      const payment = Number(firmData.initialPayment) || 0;
+
+      if (debt > 0) {
+        await addPurchase(user.uid, docRef.id, firmData.name, debt, "Boshlang'ich qarz");
+      }
+      if (payment > 0) {
+        await addPayment(user.uid, docRef.id, firmData.name, payment, "Boshlang'ich to'lov");
+      }
+
       await loadFirms(); // Refresh the list
       toast.success("Firma muvaffaqiyatli qo'shildi");
       return true;

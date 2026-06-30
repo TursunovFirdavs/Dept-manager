@@ -20,11 +20,7 @@ const FirmsPage = () => {
     searchQuery,
     setSearchQuery,
     isLoading,
-    isCreating,
-    handleCreateFirm,
   } = useFirms();
-
-  const [newFirmName, setNewFirmName] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -32,13 +28,7 @@ const FirmsPage = () => {
     }
   }, [user, fetchFirms]);
 
-  const onAddFirm = async (e) => {
-    e.preventDefault();
-    const success = await handleCreateFirm(newFirmName);
-    if (success) {
-      setNewFirmName("");
-    }
-  };
+
 
   if (loading) {
     return (
@@ -58,30 +48,12 @@ const FirmsPage = () => {
     <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] pb-24 font-sans px-4">
       {/* Add Firm Section */}
       <div className="my-6">
-        <p className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2 pl-1">
-          Yangi Firma Qo'shish
-        </p>
-        <form onSubmit={onAddFirm} className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Firma nomi..."
-            value={newFirmName}
-            onChange={(e) => setNewFirmName(e.target.value)}
-            className="h-12 rounded-[14px] bg-white dark:bg-[#121212] border-slate-200 dark:border-slate-800 text-[15px]"
-            disabled={isCreating}
-          />
-          <Button
-            type="submit"
-            disabled={!newFirmName.trim() || isCreating}
-            className="h-12 w-12 rounded-[14px] shrink-0 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-          >
-            {isCreating ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Plus className="w-5 h-5" />
-            )}
-          </Button>
-        </form>
+        <Button
+          onClick={() => navigate("/firms/add")}
+          className="w-full h-13 rounded-[16px] bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-[15px] shadow-sm flex items-center justify-center gap-2 transition-all"
+        >
+          <Plus className="w-5 h-5" strokeWidth={2.5} /> Yangi Firma Qo'shish
+        </Button>
       </div>
       {/* Search Section */}
       <div className="relative flex items-center gap-3 bg-white dark:bg-[#121212] border border-slate-200 dark:border-slate-800 px-4 py-3.5 rounded-[14px] mb-6 shadow-sm">

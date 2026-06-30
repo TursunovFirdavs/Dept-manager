@@ -4,7 +4,7 @@ import { Link, Outlet } from "react-router-dom";
 const AuthLayout = () => {
   return (
     <div className="min-h-dvh w-full bg-[#f8fafc] dark:bg-[#0c0a18] flex items-center justify-center p-4 font-sans relative overflow-hidden">
-      <div className="w-full max-w-[400px] flex flex-col items-center z-10">
+      <div className="w-full max-w-100 flex flex-col items-center z-10">
         {/* Logo and Headings */}
         <div className="flex flex-col items-center mb-8 text-center">
           <Link
@@ -19,7 +19,7 @@ const AuthLayout = () => {
           <h1 className="text-[22px] font-bold text-slate-900 dark:text-white mb-2">
             Savdo daftar
           </h1>
-          <p className="text-[14px] text-slate-500 dark:text-slate-400 px-4 leading-relaxed max-w-[280px]">
+          <p className="text-[14px] text-slate-500 dark:text-slate-400 px-4 leading-relaxed max-w-70">
             Moliyaviy jarayonlaringizni tizimli va xotirjam boshqaring.
           </p>
         </div>

@@ -155,13 +155,20 @@ const FirmDetails = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="rounded-full w-10 h-10 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+            className="rounded-full w-10 h-10 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h2 className="text-[19px] font-bold text-slate-900 dark:text-white truncate max-w-50">
-            {firm.name}
-          </h2>
+          <div className="flex flex-col">
+            <h2 className="text-[19px] font-bold text-slate-900 dark:text-white truncate max-w-[200px]">
+              {firm.name}
+            </h2>
+            {firm.phone && (
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">
+                {firm.phone}
+              </p>
+            )}
+          </div>
         </div>
         <Button
           variant="ghost"

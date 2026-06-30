@@ -6,6 +6,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import FirmsPage from "../pages/Firms";
+import AddFirm from "../pages/AddFirm";
 import FirmDetails from "../pages/FirmDetails";
 import AdminRoute from "./AdminRoute";
 import Admin from "../pages/Admin";
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: "/firms",
         element: <FirmsPage />,
+      },
+      {
+        path: "/firms/add",
+        element: <AddFirm />,
       },
       {
         path: "/firms/:firmId",
