@@ -20,9 +20,11 @@ export const getOrCreateUser = async (user) => {
       uid: user.uid,
       role: "user",
       status: "active",
+      businessType: "market",
       ownerName: "",
       shopName: "",
       phone: "",
+      note: "",
       firmCount: 0,
       totalDebt: 0,
       totalPurchase: 0,
@@ -36,7 +38,7 @@ export const getOrCreateUser = async (user) => {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
-    
+
     await setDoc(ref, newUserData);
     return { id: user.uid, ...newUserData };
   }

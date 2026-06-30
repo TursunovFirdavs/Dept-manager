@@ -78,10 +78,7 @@ const Admin = () => {
             {user.subscription?.endDate?.toDate().toLocaleDateString()}
           </p>
 
-          <p>
-            Plan:
-            {user.subscription?.plan}
-          </p>
+          <p>Business: {user.businessType}</p>
 
           <p>Subscription: {user.subscription?.status}</p>
 

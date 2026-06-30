@@ -17,6 +17,7 @@ import ProfilePage from "@/pages/Profile";
 import ProfileEdit from "@/pages/ProfileEdit";
 import Transactions from "@/pages/Transactions";
 import StatisticsPage from "@/pages/Statistics";
+import SuppliersPage from "@/pages/Suppliers";
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: "/statistika",
         element: <StatisticsPage />,
+      },
+      {
+        path: "/suppliers",
+        element: <SuppliersPage />,
       },
       {
         path: "/admin",
