@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useDataStore } from "../store/dataStore";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Plus, Loader2 } from "lucide-react";
 import { useFirms } from "@/hooks/useFirms";

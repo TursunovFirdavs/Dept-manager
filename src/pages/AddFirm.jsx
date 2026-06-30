@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowLeft, Building2, Phone, Coins, Loader2, Info, Store } from "lucide-react";
-import toast from "react-hot-toast";
 
 import { useFirms } from "@/hooks/useFirms";
 import FormField from "@/components/FormField";

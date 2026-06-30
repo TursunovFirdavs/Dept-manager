@@ -4,11 +4,14 @@ import {
   House,
   NotebookTabs,
   User,
+  ShieldCheck
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 const AppNavigation = () => {
   const location = useLocation();
+  const userData = useAuthStore((state) => state.userData);
 
   return (
     <div className="fixed bottom-0 w-full bg-white dark:bg-[#121212] border-t border-slate-200 dark:border-slate-800 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] md:hidden z-50 pb-safe">
@@ -70,6 +73,19 @@ const AppNavigation = () => {
               <User className="w-6 h-6" />
               Profil
             </Link>
+            {userData?.role === "admin" && (
+              <Link
+                to="/admin"
+                className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                  location.pathname === "/admin"
+                    ? "text-blue-600 dark:text-blue-500"
+                    : "text-slate-500 dark:text-slate-400"
+                }`}
+              >
+                <ShieldCheck className="w-6 h-6" />
+                Admin
+              </Link>
+            )}
           </nav>
         </div>
       </div>
