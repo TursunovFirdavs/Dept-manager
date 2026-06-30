@@ -104,13 +104,24 @@ const DashboardPage = () => {
             Firmalar topilmadi
           </p>
         ) : (
-          filteredFirms.map((firm) => (
-            <FirmCard
-              key={firm.id}
-              firm={firm}
-              onClick={(id) => navigate(`/firms/${id}`)}
-            />
-          ))
+          filteredFirms
+            .sort((a, b) => {
+              const dateA = a.createdAt?.toDate
+                ? a.createdAt.toDate().getTime()
+                : 0;
+              const dateB = b.createdAt?.toDate
+                ? b.createdAt.toDate().getTime()
+                : 0;
+              return dateB - dateA;
+            })
+            .slice(0, 5)
+            .map((firm) => (
+              <FirmCard
+                key={firm.id}
+                firm={firm}
+                onClick={(id) => navigate(`/firms/${id}`)}
+              />
+            ))
         )}
       </div>
 

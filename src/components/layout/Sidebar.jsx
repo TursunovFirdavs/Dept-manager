@@ -9,13 +9,14 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
-  Wallet
+  Wallet,
+  ShieldCheck
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
 const Sidebar = () => {
   const { path } = useCurrentPage();
-  const user = useAuthStore((state) => state.user);
+  const userData = useAuthStore((state) => state.userData);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navLinks = [
@@ -24,6 +25,10 @@ const Sidebar = () => {
     { name: "Arxiv", path: "/transactions", icon: History },
     { name: "Statistika", path: "/statistika", icon: ChartNoAxesCombined },
   ];
+
+  if (userData?.role === "admin") {
+    navLinks.push({ name: "Admin", path: "/admin", icon: ShieldCheck });
+  }
 
   return (
     <aside 
@@ -101,7 +106,7 @@ const Sidebar = () => {
           </div>
           {!isCollapsed && (
             <div className="flex-1 truncate">
-              <p className="truncate">{user?.displayName || user?.email || "Foydalanuvchi"}</p>
+              <p className="truncate">{userData?.ownerName || "Foydalanuvchi"}</p>
             </div>
           )}
         </Link>

@@ -23,7 +23,7 @@ const FirmCard = ({ firm, onClick }) => {
   return (
     <Card
       onClick={() => onClick && onClick(firm.id)}
-      className="flex justify-between items-center gap-4 w-full px-4 py-4 border border-slate-100 dark:border-slate-800/60 shadow-sm hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-[#121212]"
+      className="flex justify-between items-center gap-4 w-full px-4 py-4 border border-slate-100 dark:border-slate-800/60 shadow-sm hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-[#121212] cursor-pointer"
     >
       <div className="w-[46px] h-[46px] rounded-[14px] bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-lg font-bold text-slate-700 dark:text-slate-300 flex-shrink-0">
         {getInitials(firm.name)}

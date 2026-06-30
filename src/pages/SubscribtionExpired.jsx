@@ -1,12 +1,32 @@
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore";
-import { Lock, Headphones, RefreshCcw } from "lucide-react";
+import { Lock, Headphones, RefreshCcw, Copy, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { formatDateUz } from "@/lib/utils";
+import { getPaymentSettings } from "../services/settings.service";
 
 const SubscriptionExpired = () => {
   const { userData } = useAuthStore();
+  const [paymentInfo, setPaymentInfo] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const data = await getPaymentSettings();
+      setPaymentInfo(data);
+    };
+    fetchSettings();
+  }, []);
+
+  const handleCopy = () => {
+    if (paymentInfo?.cardNumber) {
+      navigator.clipboard.writeText(paymentInfo.cardNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const subscription = userData?.subscription;
   const isPremium = subscription?.plan === "premium";
@@ -56,6 +76,33 @@ const SubscriptionExpired = () => {
                 {formattedEndDate}
               </span>
             </div>
+
+            {/* To'lov ma'lumotlari qismi */}
+            {paymentInfo && (
+              <div className="mt-2 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[12px] font-semibold uppercase tracking-wider text-slate-500">To'lov uchun karta:</span>
+                  <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <span className="font-mono font-bold text-slate-900 dark:text-slate-100 tracking-[0.1em] text-[15px]">
+                      {paymentInfo.cardNumber}
+                    </span>
+                    <button 
+                      onClick={handleCopy}
+                      className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors"
+                      title="Nusxa olish"
+                    >
+                      {copied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center text-[14px]">
+                  <span className="text-slate-500 dark:text-slate-400">Karta egasi</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                    {paymentInfo.ownerName}
+                  </span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

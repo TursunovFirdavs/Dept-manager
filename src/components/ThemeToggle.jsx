@@ -2,11 +2,17 @@ import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsDark(document.documentElement.classList.contains("dark"));
+
+    // Boshqa joydan (masalan, ikkinchi ThemeToggle'dan) theme o'zgarganda xabar topish uchun
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    
+    return () => observer.disconnect();
   }, []);
 
   const toggleDarkMode = (e) => {
