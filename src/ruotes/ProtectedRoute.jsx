@@ -19,9 +19,15 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/blocked" replace />;
   }
 
-  // if (userData?.subscription?.status === "expired") {
-  //   return <Navigate to="/subscription-expired" replace />;
-  // }
+  const endDate = userData?.subscription?.endDate?.toDate 
+    ? userData.subscription.endDate.toDate() 
+    : null;
+    
+  const isExpired = endDate ? new Date() > endDate : false;
+
+  if (isExpired || userData?.subscription?.status === "expired") {
+    return <Navigate to="/subscription-expired" replace />;
+  }
 
   return children;
 };

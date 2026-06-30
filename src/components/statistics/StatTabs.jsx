@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
 
@@ -45,20 +45,35 @@ export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange })
 
       <Popover>
         <PopoverTrigger asChild>
-          <button 
-            className={`h-9 px-3 bg-slate-100 dark:bg-slate-800/50 rounded-xl flex items-center justify-center gap-2 transition-colors whitespace-nowrap w-full sm:w-auto ${
-              activeTab === "custom" 
-                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800" 
-                : "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
-            }`}
-          >
-            <CalendarIcon className="w-4 h-4" />
-            <span className="text-[13px] font-medium">
-              {activeTab === "custom" && selectedDate 
-                ? format(selectedDate, "dd MMM yyyy", { locale: uz }) 
-                : "Sana"}
-            </span>
-          </button>
+          <div className="relative inline-flex items-center w-full sm:w-auto">
+            <button 
+              className={`h-9 px-3 bg-slate-100 dark:bg-slate-800/50 rounded-xl flex items-center justify-center gap-2 transition-colors whitespace-nowrap w-full sm:w-auto ${
+                activeTab === "custom" 
+                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800" 
+                  : "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
+              } ${selectedDate ? "pr-8" : ""}`}
+            >
+              <CalendarIcon className="w-4 h-4" />
+              <span className="text-[13px] font-medium">
+                {activeTab === "custom" && selectedDate 
+                  ? format(selectedDate, "dd MMM yyyy", { locale: uz }) 
+                  : "Sana"}
+              </span>
+            </button>
+            {selectedDate && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDateChange(null);
+                  onTabChange("daily");
+                }}
+                className="absolute right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
+                aria-label="Sanani tozalash"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="end">
           <Calendar

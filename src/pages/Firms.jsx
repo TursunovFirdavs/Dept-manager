@@ -13,7 +13,7 @@ import FirmCard from "@/components/FirmCard";
 const FirmsPage = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const { firms, isFirmsLoading: loading, fetchFirms } = useDataStore();
+  const { isFirmsLoading: loading, fetchFirms } = useDataStore();
   
   const {
     filteredFirms,
