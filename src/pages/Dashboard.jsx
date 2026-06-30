@@ -86,7 +86,14 @@ const DashboardPage = () => {
         {filteredFirms.length === 0 ? (
           <p className="text-center text-slate-500 text-sm py-10 bg-white dark:bg-[#121212] rounded-[16px] border border-slate-100 dark:border-slate-800">Firmalar topilmadi</p>
         ) : (
-          filteredFirms.map((firm) => (
+          filteredFirms
+            .sort((a, b) => {
+              const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+              const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+              return dateB - dateA;
+            })
+            .slice(0, 5)
+            .map((firm) => (
             <FirmCard 
               key={firm.id} 
               firm={firm} 
