@@ -68,6 +68,7 @@ export const useStatistics = (type) => {
     };
 
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, filterType, selectedDate]);
 
   // Biz backenddan allaqachon filtrlangan ma'lumotni oldik, shuning uchun filteredData shunchaki transactions ning o'zi

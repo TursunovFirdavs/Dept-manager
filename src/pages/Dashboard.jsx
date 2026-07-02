@@ -5,15 +5,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useNavigate } from "react-router-dom";
 import { useFirms } from "@/hooks/useFirms";
 import FirmCard from "@/components/FirmCard";
-import { useState } from "react";
-import { useSuppliers } from "@/hooks/useSuppliers";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const { firms, filteredFirms, searchQuery, setSearchQuery, isLoading } =
     useFirms();
-  const [newSupplierName, setNewSupplierName] = useState("");
-  const { handleCreateSupplier } = useSuppliers();
+
 
   const totalDebt = firms.reduce((sum, firm) => sum + (firm.balance || 0), 0);
   const totalPayment = firms.reduce(
@@ -27,16 +24,16 @@ const DashboardPage = () => {
   if (isLoading) {
     return (
       <Container className="bg-[#f8fafc] dark:bg-[#0c0a18] p-4 flex flex-col gap-6">
-        <Skeleton className="h-[200px] w-full rounded-[32px]" />
-        <Skeleton className="h-[52px] w-full rounded-2xl" />
+        <Skeleton className="h-50 w-full rounded-[32px]" />
+        <Skeleton className="h-13 w-full rounded-2xl" />
         <div className="flex justify-between mt-2">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-24" />
         </div>
         <div className="flex flex-col gap-3">
-          <Skeleton className="h-[88px] w-full rounded-2xl" />
-          <Skeleton className="h-[88px] w-full rounded-2xl" />
-          <Skeleton className="h-[88px] w-full rounded-2xl" />
+          <Skeleton className="h-22 w-full rounded-2xl" />
+          <Skeleton className="h-22 w-full rounded-2xl" />
+          <Skeleton className="h-22 w-full rounded-2xl" />
         </div>
       </Container>
     );
@@ -125,8 +122,8 @@ const DashboardPage = () => {
         )}
       </div>
 
-      <input type="text" onChange={(e) => setNewSupplierName(e.target.value)} />
-      <button onClick={() => handleCreateSupplier(newSupplierName)}>add</button>
+      {/* <input type="text" onChange={(e) => setNewSupplierName(e.target.value)} />
+      <button onClick={() => handleCreateSupplier(newSupplierName)}>add</button> */}
 
       <div className="h-20"></div>
     </Container>

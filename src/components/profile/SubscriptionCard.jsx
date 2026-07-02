@@ -1,6 +1,7 @@
 import { Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDateUz } from "@/lib/utils";
+import { differenceInCalendarDays } from "date-fns";
 
 export const SubscriptionCard = ({ subscription }) => {
   const isPremium = subscription?.plan === "premium"; 
@@ -10,8 +11,7 @@ export const SubscriptionCard = ({ subscription }) => {
   const endDate = subscription?.endDate?.toDate() || new Date(new Date().setFullYear(new Date().getFullYear() + 1)); 
   
   const today = new Date();
-  const diffTime = endDate.getTime() - today.getTime();
-  const daysLeft = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+  const daysLeft = differenceInCalendarDays(endDate, today);
   
   const totalDuration = endDate.getTime() - startDate.getTime();
   const elapsed = today.getTime() - startDate.getTime();
@@ -36,7 +36,7 @@ export const SubscriptionCard = ({ subscription }) => {
         </div>
         
         <div className="mb-2 text-[13px] text-slate-600 dark:text-slate-400">
-          Tugashiga {daysLeft} kun qoldi
+          {daysLeft > 0 ? `Tugashiga ${daysLeft} kun qoldi` : (daysLeft === 0 ? "Bugun tugaydi" : `O'tgan ${Math.abs(daysLeft)} kun`)}
         </div>
         
         {/* Progress bar */}
