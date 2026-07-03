@@ -22,7 +22,7 @@ const Sidebar = () => {
   const navLinks = [
     { name: "Asosiy", path: "/dashboard", icon: House },
     { name: "Firmalar", path: "/firms", icon: NotebookTabs },
-    { name: "Arxiv", path: "/transactions", icon: History },
+    { name: "Transactions", path: "/transactions", icon: History },
     { name: "Statistika", path: "/statistika", icon: ChartNoAxesCombined },
   ];
 

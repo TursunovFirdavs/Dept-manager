@@ -27,6 +27,7 @@ const Transactions = () => {
   // Calendar states
   const [selectedDate, setSelectedDate] = useState(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [viewMonth, setViewMonth] = useState(new Date());
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -55,8 +56,6 @@ const Transactions = () => {
   };
 
   const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
 
   const monthNames = [
     "Yanvar",
@@ -79,7 +78,7 @@ const Transactions = () => {
     return `${dateObj.getDate()}-${monthNames[dateObj.getMonth()].slice(0, 3).toUpperCase()}, ${dateObj.getFullYear()}`;
   };
 
-  const currentMonthName = `${monthNames[currentMonth]}, ${currentYear}`;
+  const currentMonthName = `${monthNames[viewMonth.getMonth()]}, ${viewMonth.getFullYear()}`;
   const viewRangeTitle = selectedDate
     ? formatDateDisplay(selectedDate)
     : currentMonthName;
@@ -93,13 +92,13 @@ const Transactions = () => {
       return date && date.toDateString() === selectedDate.toDateString();
     });
   } else {
-    // Default: joriy oy
+    // Default: joriy oy yoki tanlangan oy
     filteredTransactions = transactions.filter((tx) => {
       const date = tx.createdAt?.toDate ? tx.createdAt.toDate() : null;
       return (
         date &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
+        date.getMonth() === viewMonth.getMonth() &&
+        date.getFullYear() === viewMonth.getFullYear()
       );
     });
   }
@@ -186,7 +185,7 @@ const Transactions = () => {
               {selectedDate && (
                 <button
                   onClick={() => setSelectedDate(null)}
-                  className="w-5 h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="w-5 h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -198,7 +197,7 @@ const Transactions = () => {
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
               <button
-                className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors shadow-sm ${selectedDate ? "bg-blue-600 text-white shadow-blue-500/20" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
+                className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors shadow-sm cursor-pointer ${selectedDate ? "bg-blue-600 text-white shadow-blue-500/20" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
               >
                 <CalendarIcon className="w-5 h-5" />
               </button>
@@ -216,18 +215,28 @@ const Transactions = () => {
                     setIsCalendarOpen(false);
                   }
                 }}
+                month={viewMonth}
+                onMonthChange={(newMonth) => {
+                  setViewMonth(newMonth);
+                  setSelectedDate(null);
+                }}
                 disabled={(date) => date > new Date()}
                 initialFocus
+                captionLayout="dropdown-buttons"
+                fromYear={2020}
+                toYear={new Date().getFullYear()}
                 className="bg-white dark:bg-[#121212] rounded-[16px]"
               />
-              {selectedDate && (
+              {/* Show filter clear if a day is selected or if view is not current month */}
+              {(selectedDate || viewMonth.getMonth() !== new Date().getMonth() || viewMonth.getFullYear() !== new Date().getFullYear()) && (
                 <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#121212] rounded-b-[16px]">
                   <button
                     onClick={() => {
                       setSelectedDate(null);
+                      setViewMonth(new Date());
                       setIsCalendarOpen(false);
                     }}
-                    className="w-full h-10 flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-xl transition-colors text-[14px]"
+                    className="w-full h-10 flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-xl transition-colors text-[14px] cursor-pointer"
                   >
                     <FilterX className="w-4 h-4" />
                     Filtrni tozalash

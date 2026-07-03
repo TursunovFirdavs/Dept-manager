@@ -188,6 +188,9 @@ const AdminUserCard = ({ user, currentUser, handleStatusChange, handleSubscripti
                   selected={selectedDate ? new Date(selectedDate) : undefined}
                   onSelect={setSelectedDate}
                   initialFocus
+                  captionLayout="dropdown-buttons"
+                  fromYear={2020}
+                  toYear={new Date().getFullYear() + 10}
                   className="mb-3"
                 />
                 <Button

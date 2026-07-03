@@ -49,7 +49,7 @@ const AppNavigation = () => {
               }`}
             >
               <History className="w-6 h-6" />
-              Arxiv
+              Transactions
             </Link>
             <Link
               to="/statistika"
