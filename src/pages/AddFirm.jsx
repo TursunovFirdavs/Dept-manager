@@ -95,7 +95,7 @@ const AddFirm = () => {
             icon={Phone}
             iconPosition="left"
             id="phone"
-            type="text"
+            type="tel"
             placeholder="+998 (90) 000-00-00"
             error={errors.phone}
             {...register("phone")}

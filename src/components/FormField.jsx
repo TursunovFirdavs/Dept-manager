@@ -3,12 +3,44 @@ import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const FormField = forwardRef(function FormField(
-  { label, actionLink, icon: Icon, iconPosition = "right", error, type = "text", id, className, ...props },
+  { label, actionLink, icon: Icon, iconPosition = "right", error, type = "text", id, className, onChange, ...props },
   ref
 ) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+  const handleChange = (e) => {
+    if (type === "tel") {
+      let input = e.target.value.replace(/\D/g, "");
+      
+      if (input.length === 0) {
+        e.target.value = "";
+        if (onChange) onChange(e);
+        return;
+      }
+      
+      if (input.length > 0 && !input.startsWith("998")) {
+        input = "998" + input;
+      }
+      
+      if (input.length > 12) {
+        input = input.substring(0, 12);
+      }
+  
+      let formatted = "+";
+      if (input.length > 0) formatted += input.substring(0, 3);
+      if (input.length >= 4) formatted += " (" + input.substring(3, 5);
+      if (input.length >= 6) formatted += ") " + input.substring(5, 8);
+      if (input.length >= 9) formatted += "-" + input.substring(8, 10);
+      if (input.length >= 11) formatted += "-" + input.substring(10, 12);
+  
+      e.target.value = formatted;
+    }
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
@@ -65,6 +97,7 @@ const FormField = forwardRef(function FormField(
               Icon && iconPosition === "left" && "pl-10",
               isPassword && "pr-10"
             )}
+            onChange={handleChange}
             {...props}
           />
         )}
