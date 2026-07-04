@@ -85,7 +85,7 @@ export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange, v
             )}
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[280px] p-0 rounded-[16px] shadow-2xl border-slate-100 dark:border-slate-800" align="end">
+        <PopoverContent className="w-70 p-0 rounded-[16px] shadow-2xl border-slate-100 dark:border-slate-800" align="end">
           {activeTab === "daily" || activeTab === "custom" ? (
             <Calendar
               mode="single"

@@ -3,6 +3,7 @@ import {
   History,
   House,
   NotebookTabs,
+  BriefcaseBusiness,
   User,
   ShieldCheck
 } from "lucide-react";
@@ -38,8 +39,21 @@ const AppNavigation = () => {
               }`}
             >
               <NotebookTabs className="w-6 h-6" />
-              Firmalar
+              Qarzlar
             </Link>
+            {userData?.businessType === "supplier" && (
+              <Link
+                to="/suppliers"
+                className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
+                  location.pathname.startsWith("/suppliers")
+                    ? "text-blue-600 dark:text-blue-500"
+                    : "text-slate-500 dark:text-slate-400"
+                }`}
+              >
+                <BriefcaseBusiness className="w-6 h-6" />
+                Firmalar
+              </Link>
+            )}
             <Link
               to="/transactions"
               className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors ${
