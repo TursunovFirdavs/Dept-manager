@@ -36,7 +36,7 @@ import toast from "react-hot-toast";
 import { Calendar as ShadcnCalendar } from "@/components/ui/calendar";
 
 const transactionSchema = z.object({
-  amount: z.coerce.number().min(1, "Summani to'g'ri kiriting"),
+  amount: z.preprocess((val) => Number(String(val).replace(/\D/g, "")), z.number().min(1, "Summani to'g'ri kiriting")),
   note: z.string().optional(),
 });
 
@@ -292,10 +292,15 @@ const FirmDetails = () => {
                   UZS
                 </span>
                 <Input
-                  type="number"
+                  type="text"
                   placeholder="0"
-                  className={`pl-4 pr-14 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 text-[16px] font-medium placeholder:text-slate-300 ${errors.amount ? "border-red-500" : "border-slate-200 dark:border-slate-800"}`}
-                  {...register("amount")}
+                  className={`pl-4 pr-14 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 text-[16px] font-bold placeholder:text-slate-300 ${errors.amount ? "border-red-500" : "border-slate-200 dark:border-slate-800"}`}
+                  {...register("amount", {
+                    onChange: (e) => {
+                      const rawValue = e.target.value.replace(/\D/g, "");
+                      e.target.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    }
+                  })}
                 />
               </div>
               {errors.amount && (
