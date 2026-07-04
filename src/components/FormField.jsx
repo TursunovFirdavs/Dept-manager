@@ -20,7 +20,9 @@ const FormField = forwardRef(function FormField(
         return;
       }
       
-      if (input.length > 0 && !input.startsWith("998")) {
+      const isDeleting = e.nativeEvent?.inputType === "deleteContentBackward" || e.nativeEvent?.inputType === "deleteContentForward";
+      
+      if (!isDeleting && input.length > 0 && !input.startsWith("998")) {
         input = "998" + input;
       }
       

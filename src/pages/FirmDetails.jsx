@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { useAuthStore } from "../store/authStore";
 import { getFirmById } from "../services/firm.service";
 import {
@@ -32,16 +35,33 @@ import {
 import toast from "react-hot-toast";
 import { Calendar as ShadcnCalendar } from "@/components/ui/calendar";
 
+const transactionSchema = z.object({
+  amount: z.coerce.number().min(1, "Summani to'g'ri kiriting"),
+  note: z.string().optional(),
+});
+
 const FirmDetails = () => {
   const { firmId } = useParams();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
   const [firm, setFirm] = useState(null);
-  const [amount, setAmount] = useState("");
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filterType, setFilterType] = useState("all");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      amount: "",
+      note: "",
+    },
+  });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Calendar states
@@ -75,16 +95,12 @@ const FirmDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid, firmId]);
 
-  const handlePurchase = async () => {
-    if (!amount || Number(amount) <= 0) {
-      toast.error("Summani to'g'ri kiriting");
-      return;
-    }
+  const handlePurchase = async (data) => {
     setIsLoading(true);
     try {
-      await addPurchase(user.uid, firmId, firm.name, Number(amount), "");
+      await addPurchase(user.uid, firmId, firm.name, data.amount, data.note || "");
       await loadData();
-      setAmount("");
+      reset();
       toast.success("Tovar qo'shildi (Yangi qarz)");
     } catch {
       toast.error("Xatolik yuz berdi");
@@ -93,16 +109,12 @@ const FirmDetails = () => {
     }
   };
 
-  const handlePayment = async () => {
-    if (!amount || Number(amount) <= 0) {
-      toast.error("Summani to'g'ri kiriting");
-      return;
-    }
+  const handlePayment = async (data) => {
     setIsLoading(true);
     try {
-      await addPayment(user.uid, firmId, firm.name, Number(amount), "");
+      await addPayment(user.uid, firmId, firm.name, data.amount, data.note || "");
       await loadData();
-      setAmount("");
+      reset();
       toast.success("To'lov qilindi");
     } catch {
       toast.error("Xatolik yuz berdi");
@@ -270,56 +282,74 @@ const FirmDetails = () => {
           Amaliyot Bajarish
         </h3>
         <Card className="bg-white dark:bg-[#121212] p-5 rounded-[20px] border border-slate-100 dark:border-slate-800 shadow-sm">
-          <div className="mb-4">
-            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
-              Summani kiriting
-            </Label>
-            <div className="relative">
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-[14px]">
-                UZS
-              </span>
+          <form>
+            <div className="mb-3">
+              <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+                Summani kiriting
+              </Label>
+              <div className="relative">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-[14px]">
+                  UZS
+                </span>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  className={`pl-4 pr-14 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 text-[16px] font-medium placeholder:text-slate-300 ${errors.amount ? "border-red-500" : "border-slate-200 dark:border-slate-800"}`}
+                  {...register("amount")}
+                />
+              </div>
+              {errors.amount && (
+                <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.amount.message}</p>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+                Izoh (Ixtiyoriy)
+              </Label>
               <Input
-                type="number"
-                placeholder="0"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="pl-4 pr-14 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[16px] font-medium placeholder:text-slate-300"
+                type="text"
+                placeholder="Nima uchun?"
+                className="h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[14px] font-medium placeholder:text-slate-400"
+                {...register("note")}
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <Button
-              disabled={isLoading}
-              onClick={handlePurchase}
-              className="bg-black hover:bg-slate-900 dark:bg-white dark:text-black dark:hover:bg-slate-200 text-white rounded-full h-12 flex items-center justify-center gap-2 font-bold text-[13px] shadow-md transition-transform active:scale-95"
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <PlusCircle className="w-4.5 h-4.5" />
-              )}
-              TOVAR QO'SHISH
-            </Button>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <Button
+                type="button"
+                disabled={isLoading}
+                onClick={handleSubmit(handlePurchase)}
+                className="bg-black hover:bg-slate-900 dark:bg-white dark:text-black dark:hover:bg-slate-200 text-white rounded-full h-12 flex items-center justify-center gap-2 font-bold text-[13px] shadow-md transition-transform active:scale-95 cursor-pointer"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="w-4.5 h-4.5" />
+                )}
+                TOVAR QO'SHISH
+              </Button>
 
-            <Button
-              variant="secondary"
-              disabled={isLoading}
-              onClick={handlePayment}
-              className="bg-blue-100/60 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full h-12 flex items-center justify-center gap-2 font-bold text-[13px] transition-transform active:scale-95"
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <MinusCircle className="w-4.5 h-4.5" />
-              )}
-              TO'LOV QILISH
-            </Button>
-          </div>
-          <p className="text-center text-[11px] font-medium text-slate-500 italic px-2">
-            "To'lov qilganda qarzdan ayriladi; yangi tovar kelganda qarzga
-            qo'shiladi."
-          </p>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isLoading}
+                onClick={handleSubmit(handlePayment)}
+                className="bg-blue-100/60 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full h-12 flex items-center justify-center gap-2 font-bold text-[13px] transition-transform active:scale-95 cursor-pointer"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <MinusCircle className="w-4.5 h-4.5" />
+                )}
+                TO'LOV QILISH
+              </Button>
+            </div>
+            <p className="text-center text-[11px] font-medium text-slate-500 italic px-2">
+              "To'lov qilganda qarzdan ayriladi; yangi tovar kelganda qarzga
+              qo'shiladi."
+            </p>
+          </form>
         </Card>
       </div>
 
