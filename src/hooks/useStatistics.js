@@ -9,6 +9,7 @@ export const useStatistics = (type) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterType, setFilterType] = useState("daily"); // 'daily', 'monthly', 'yearly', 'custom'
   const [selectedDate, setSelectedDate] = useState(null);
+  const [viewMonth, setViewMonth] = useState(new Date());
 
   useEffect(() => {
     if (!user) return;
@@ -16,7 +17,6 @@ export const useStatistics = (type) => {
     const load = async () => {
       setIsLoading(true);
       try {
-        const now = new Date();
         let start = new Date();
         let end = new Date();
 
@@ -29,10 +29,10 @@ export const useStatistics = (type) => {
           start.setHours(0, 0, 0, 0);
           end.setHours(23, 59, 59, 999);
         } else if (filterType === "monthly") {
-          start = new Date(now.getFullYear(), now.getMonth(), 1);
+          start = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
           end = new Date(
-            now.getFullYear(),
-            now.getMonth() + 1,
+            viewMonth.getFullYear(),
+            viewMonth.getMonth() + 1,
             0,
             23,
             59,
@@ -40,8 +40,8 @@ export const useStatistics = (type) => {
             999,
           );
         } else if (filterType === "yearly") {
-          start = new Date(now.getFullYear(), 0, 1);
-          end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+          start = new Date(viewMonth.getFullYear(), 0, 1);
+          end = new Date(viewMonth.getFullYear(), 11, 31, 23, 59, 59, 999);
         }
 
         const allTransactionsData = await getTransactionsByDateRange(
@@ -69,7 +69,7 @@ export const useStatistics = (type) => {
 
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, filterType, selectedDate]);
+  }, [user, filterType, selectedDate, viewMonth]);
 
   // Biz backenddan allaqachon filtrlangan ma'lumotni oldik, shuning uchun filteredData shunchaki transactions ning o'zi
   const filteredData = transactions;
@@ -119,6 +119,8 @@ export const useStatistics = (type) => {
     setFilterType,
     selectedDate,
     setSelectedDate,
+    viewMonth,
+    setViewMonth,
     stats,
   };
 };

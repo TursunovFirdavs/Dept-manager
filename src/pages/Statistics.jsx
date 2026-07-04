@@ -12,6 +12,8 @@ const StatisticsPage = () => {
     setFilterType, 
     selectedDate, 
     setSelectedDate, 
+    viewMonth,
+    setViewMonth,
     stats 
   } = useStatistics();
 
@@ -58,6 +60,8 @@ const StatisticsPage = () => {
           onTabChange={setFilterType} 
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
+          viewMonth={viewMonth}
+          onMonthChange={setViewMonth}
         />
       </div>
 
