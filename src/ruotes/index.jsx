@@ -12,6 +12,8 @@ import AdminRoute from "./AdminRoute";
 import Admin from "../pages/Admin";
 import SubscriptionExpired from "../pages/SubscribtionExpired";
 import SubscriptionRoute from "./SubscriptionRoute";
+import Blocked from "../pages/Blocked";
+import BlockedRoute from "./BlockedRoute";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import DashboardPage from "@/pages/Dashboard";
@@ -108,6 +110,14 @@ export const router = createBrowserRouter([
       <SubscriptionRoute>
         <SubscriptionExpired />
       </SubscriptionRoute>
+    ),
+  },
+  {
+    path: "/blocked",
+    element: (
+      <BlockedRoute>
+        <Blocked />
+      </BlockedRoute>
     ),
   },
 ]);

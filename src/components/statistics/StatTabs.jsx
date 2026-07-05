@@ -1,6 +1,7 @@
-import { Calendar as CalendarIcon, X } from "lucide-react";
+import { Calendar as CalendarIcon, X, FilterX, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
+import { useState } from "react";
 
 import {
   Popover,
@@ -9,7 +10,9 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange }) => {
+export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange, viewMonth, onMonthChange }) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
   const tabs = [
     { id: "daily", label: "Kunlik" },
     { id: "monthly", label: "Oylik" },
@@ -20,6 +23,7 @@ export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange })
     onDateChange(date);
     if (date) {
       onTabChange("custom");
+      setIsCalendarOpen(false);
     } else {
       onTabChange("daily"); // reset if cleared
     }
@@ -43,7 +47,7 @@ export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange })
         ))}
       </div>
 
-      <Popover>
+      <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
           <div className="relative inline-flex items-center w-full sm:w-auto">
             <button 
@@ -54,10 +58,16 @@ export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange })
               } ${selectedDate ? "pr-8" : ""}`}
             >
               <CalendarIcon className="w-4 h-4" />
-              <span className="text-[13px] font-medium">
+              <span className="text-[13px] font-medium capitalize">
                 {activeTab === "custom" && selectedDate 
                   ? format(selectedDate, "dd MMM yyyy", { locale: uz }) 
-                  : "Sana"}
+                  : activeTab === "daily" 
+                    ? format(new Date(), "dd MMM yyyy", { locale: uz })
+                    : activeTab === "monthly"
+                      ? format(viewMonth, "MMMM yyyy", { locale: uz })
+                      : activeTab === "yearly"
+                        ? format(viewMonth, "yyyy", { locale: uz })
+                        : "Sana"}
               </span>
             </button>
             {selectedDate && (
@@ -75,14 +85,133 @@ export const StatTabs = ({ activeTab, onTabChange, selectedDate, onDateChange })
             )}
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDateSelect}
-            disabled={(date) => date > new Date()}
-            initialFocus
-          />
+        <PopoverContent className="w-70 p-0 rounded-[16px] shadow-2xl border-slate-100 dark:border-slate-800" align="end">
+          {activeTab === "daily" || activeTab === "custom" ? (
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={handleDateSelect}
+              month={viewMonth}
+              onMonthChange={(newMonth) => {
+                onMonthChange(newMonth);
+              }}
+              disabled={(date) => date > new Date()}
+              initialFocus
+              captionLayout="dropdown-buttons"
+              fromYear={2020}
+              toYear={new Date().getFullYear()}
+              className="bg-white dark:bg-[#121212] rounded-[16px] p-3"
+            />
+          ) : activeTab === "monthly" ? (
+            <div className="p-4 bg-white dark:bg-[#121212] rounded-[16px]">
+              <div className="flex items-center justify-between mb-4">
+                <button 
+                  onClick={() => onMonthChange(new Date(viewMonth.getFullYear() - 1, viewMonth.getMonth(), 1))} 
+                  className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="font-medium text-sm flex items-center">
+                  {viewMonth.getFullYear()}
+                </div>
+                <button 
+                  onClick={() => onMonthChange(new Date(viewMonth.getFullYear() + 1, viewMonth.getMonth(), 1))} 
+                  className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  disabled={viewMonth.getFullYear() >= new Date().getFullYear()}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {["Yan", "Fev", "Mar", "Apr", "May", "Iyun", "Iyul", "Avg", "Sen", "Okt", "Noy", "Dek"].map((m, i) => {
+                  const isCurrent = viewMonth.getMonth() === i;
+                  const isDisabled = viewMonth.getFullYear() === new Date().getFullYear() && i > new Date().getMonth();
+                  return (
+                    <button 
+                      key={m}
+                      onClick={() => {
+                        onMonthChange(new Date(viewMonth.getFullYear(), i, 1));
+                        setIsCalendarOpen(false);
+                      }}
+                      disabled={isDisabled}
+                      className={`h-9 flex items-center justify-center text-sm font-medium rounded-md transition-colors ${
+                        isCurrent 
+                          ? 'bg-slate-900 text-slate-50 hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90 shadow' 
+                          : isDisabled 
+                            ? 'text-slate-400 opacity-50 cursor-not-allowed' 
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100'
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 bg-white dark:bg-[#121212] rounded-[16px]">
+              <div className="flex items-center justify-between mb-4">
+                <button 
+                  onClick={() => onMonthChange(new Date(viewMonth.getFullYear() - 12, viewMonth.getMonth(), 1))} 
+                  className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="font-medium text-sm flex items-center">
+                  Yillar
+                </div>
+                <button 
+                  onClick={() => onMonthChange(new Date(viewMonth.getFullYear() + 12, viewMonth.getMonth(), 1))} 
+                  className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  disabled={viewMonth.getFullYear() + 12 > new Date().getFullYear()}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({length: 12}, (_, i) => Math.floor(viewMonth.getFullYear() / 12) * 12 + i).map(y => {
+                  const isCurrent = viewMonth.getFullYear() === y;
+                  const isDisabled = y > new Date().getFullYear();
+                  return (
+                    <button 
+                      key={y}
+                      onClick={() => {
+                        onMonthChange(new Date(y, viewMonth.getMonth(), 1));
+                        setIsCalendarOpen(false);
+                      }}
+                      disabled={isDisabled}
+                      className={`h-9 flex items-center justify-center text-sm font-medium rounded-md transition-colors ${
+                        isCurrent 
+                          ? 'bg-slate-900 text-slate-50 hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90 shadow' 
+                          : isDisabled 
+                            ? 'text-slate-400 opacity-50 cursor-not-allowed' 
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100'
+                      }`}
+                    >
+                      {y}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          
+          {(selectedDate || viewMonth?.getMonth() !== new Date().getMonth() || viewMonth?.getFullYear() !== new Date().getFullYear()) && (
+            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#121212] rounded-b-[16px]">
+              <button
+                onClick={() => {
+                  onDateChange(null);
+                  onMonthChange(new Date());
+                  onTabChange("daily");
+                  setIsCalendarOpen(false);
+                }}
+                className="w-full h-10 flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-xl transition-colors text-[13px] cursor-pointer"
+              >
+                <FilterX className="w-4 h-4" />
+                Filtrni tozalash
+              </button>
+            </div>
+          )}
         </PopoverContent>
       </Popover>
     </div>

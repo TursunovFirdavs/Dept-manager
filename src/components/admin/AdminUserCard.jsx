@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Calendar as CalendarIcon, Loader2 } from "lucide-react";
-import { differenceInDays } from "date-fns";
+import { differenceInCalendarDays } from "date-fns";
 import { Calendar as ShadcnCalendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -18,26 +18,33 @@ const AdminUserCard = ({ user, currentUser, handleStatusChange, handleSubscripti
   
   // Calculate remaining days
   const today = new Date();
-  const daysLeft = subEndDate ? differenceInDays(subEndDate, today) : -1;
+  const daysLeft = subEndDate ? differenceInCalendarDays(subEndDate, today) : -1;
   
-  let statusBadge = { label: "Tugagan", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" };
-  let progressColor = "bg-red-600";
+  let statusBadge;
+  if (isBlocked) {
+    statusBadge = { label: "Bloklangan", color: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400" };
+  } else if (user.subscription?.status === 'active') {
+    statusBadge = { label: "Faol", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" };
+  } else {
+    statusBadge = { label: "Nofaol", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" };
+  }
+
+  let progressColor = "bg-black dark:bg-white";
   let progressValue = 100;
   
   if (isBlocked) {
-    statusBadge = { label: "Bloklangan", color: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400" };
     progressColor = "bg-slate-400";
     progressValue = 0;
   } else if (daysLeft > 10) {
-    statusBadge = { label: "Faol", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" };
     progressColor = "bg-black dark:bg-white"; 
-    progressValue = Math.min(100, Math.max(0, (daysLeft / 365) * 100)); // Scaled randomly based on 1 year max
+    progressValue = Math.min(100, Math.max(0, (daysLeft / 365) * 100));
   } else if (daysLeft > 0 && daysLeft <= 10) {
-    statusBadge = { label: `${daysLeft} Kun qoldi`, color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400" };
     progressColor = "bg-yellow-400";
     progressValue = Math.max(5, (daysLeft / 30) * 100);
-  } else if (daysLeft <= 0) {
-    statusBadge = { label: "Tugagan", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" };
+  } else if (daysLeft === 0) {
+    progressColor = "bg-red-500";
+    progressValue = 5;
+  } else if (daysLeft < 0) {
     progressColor = "bg-red-600";
     progressValue = 100;
   }
@@ -88,7 +95,7 @@ const AdminUserCard = ({ user, currentUser, handleStatusChange, handleSubscripti
         </p>
 
         {/* Divider */}
-        <div className="w-full h-[1px] bg-slate-100 dark:bg-slate-800 mb-5" />
+        <div className="w-full h-px bg-slate-100 dark:bg-slate-800 mb-5" />
 
         {/* Info Grid */}
         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -123,8 +130,8 @@ const AdminUserCard = ({ user, currentUser, handleStatusChange, handleSubscripti
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
               Qolgan Vaqt
             </p>
-            <p className={`text-[12px] font-bold ${daysLeft <= 0 ? 'text-red-600' : (daysLeft <= 10 ? 'text-yellow-600 dark:text-yellow-500' : 'text-slate-700 dark:text-slate-300')}`}>
-              {daysLeft > 0 ? `${daysLeft} Kun` : `O'tgan ${Math.abs(daysLeft)} Kun`}
+            <p className={`text-[12px] font-bold ${daysLeft < 0 ? 'text-red-600' : (daysLeft <= 10 ? 'text-yellow-600 dark:text-yellow-500' : 'text-slate-700 dark:text-slate-300')}`}>
+              {daysLeft > 0 ? `${daysLeft} Kun qoldi` : (daysLeft === 0 ? `Bugun tugaydi` : `O'tgan ${Math.abs(daysLeft)} Kun`)}
             </p>
           </div>
           <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -136,7 +143,7 @@ const AdminUserCard = ({ user, currentUser, handleStatusChange, handleSubscripti
         </div>
 
         {/* Divider */}
-        <div className="w-full h-[1px] bg-slate-100 dark:bg-slate-800 mb-5" />
+        <div className="w-full h-px bg-slate-100 dark:bg-slate-800 mb-5" />
 
         {/* Footer Actions */}
         <div className="flex items-center justify-between">
@@ -181,6 +188,9 @@ const AdminUserCard = ({ user, currentUser, handleStatusChange, handleSubscripti
                   selected={selectedDate ? new Date(selectedDate) : undefined}
                   onSelect={setSelectedDate}
                   initialFocus
+                  captionLayout="dropdown-buttons"
+                  fromYear={2020}
+                  toYear={new Date().getFullYear() + 10}
                   className="mb-3"
                 />
                 <Button

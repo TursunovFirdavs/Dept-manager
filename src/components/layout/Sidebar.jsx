@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Wallet,
-  ShieldCheck
+  ShieldCheck,
+  BriefcaseBusiness
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
@@ -21,10 +22,17 @@ const Sidebar = () => {
 
   const navLinks = [
     { name: "Asosiy", path: "/dashboard", icon: House },
-    { name: "Firmalar", path: "/firms", icon: NotebookTabs },
-    { name: "Arxiv", path: "/transactions", icon: History },
-    { name: "Statistika", path: "/statistika", icon: ChartNoAxesCombined },
+    { name: "Qarzlar", path: "/firms", icon: NotebookTabs },
   ];
+
+  if (userData?.businessType === "supplier") {
+    navLinks.push({ name: "Firmalar", path: "/suppliers", icon: BriefcaseBusiness });
+  }
+
+  navLinks.push(
+    { name: "Transactions", path: "/transactions", icon: History },
+    { name: "Statistika", path: "/statistika", icon: ChartNoAxesCombined },
+  );
 
   if (userData?.role === "admin") {
     navLinks.push({ name: "Admin", path: "/admin", icon: ShieldCheck });
