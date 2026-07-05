@@ -99,7 +99,7 @@ const ProfilePage = () => {
             <LogOut className="w-4.5 h-4.5" />
             <span>Chiqish</span>
           </button>
-          
+
           <div className="h-20"></div>
         </div>
       </main>

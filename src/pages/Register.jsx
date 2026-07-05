@@ -2,16 +2,26 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowRight, Loader2, Store, User, Phone, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  Loader2,
+  Store,
+  User,
+  Phone,
+  Lock,
+  AtSign,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import FormField from "@/components/FormField";
 import { Button } from "@/components/ui/button";
+import { createUserProfile, registerUser } from "@/services/auth.service";
 
 const registerSchema = z.object({
   shopName: z.string().min(2, "Do'kon nomi kamida 2 ta belgi bo'lishi kerak"),
   username: z.string().min(3, "Username kamida 3 ta belgi bo'lishi kerak"),
+  email: z.string().email("Yaroqsiz email manzili"),
   phone: z.string().min(9, "Telefon raqami kiritilishi shart"),
   password: z.string().min(8, "Parol kamida 8 ta belgi bo'lishi kerak"),
   description: z.string().optional(),
@@ -31,17 +41,19 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    try {
-      // Firebase connection will be here later
-      console.log("Register data:", data);
 
-      // Simulate API call for now
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const credential = await registerUser(data.email, data.password);
+
+      const userProfile = await createUserProfile(credential.user.uid, data);
+      console.log(userProfile);
 
       toast.success("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+
       navigate("/login");
     } catch (error) {
-      toast.error(error.message || "Xatolik yuz berdi");
+      toast.error(error.message);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -53,11 +65,8 @@ const Register = () => {
         <h2 className="text-[20px] font-bold text-[#0f172a] dark:text-white mb-6 text-center">
           Yangi hisob ochish
         </h2>
-        
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-3"
-        >
+
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           <FormField
             label="Shop Name"
             icon={Store}
@@ -80,6 +89,16 @@ const Register = () => {
             error={errors.username}
             className="mb-1"
             {...register("username")}
+          />
+
+          <FormField
+            label="Email address"
+            icon={AtSign}
+            id="email"
+            type="email"
+            placeholder="name@gmail.com"
+            error={errors.email}
+            {...register("email")}
           />
 
           <FormField
@@ -125,8 +144,7 @@ const Register = () => {
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <span className="flex items-center justify-center gap-2">
-                Sign Up{" "}
-                <ArrowRight className="w-4.5 h-4.5" strokeWidth={2.5} />
+                Sign Up <ArrowRight className="w-4.5 h-4.5" strokeWidth={2.5} />
               </span>
             )}
           </Button>

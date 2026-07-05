@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { observeAuth } from "../services/auth.service";
 import { useAuthStore } from "../store/authStore";
-import { getOrCreateUser, expireSubscription } from "../services/user.service";
+import { expireSubscription, getUserData } from "../services/user.service";
 
 export default function AuthProvider({ children }) {
   const setUser = useAuthStore((state) => state.setUser);
@@ -15,7 +15,7 @@ export default function AuthProvider({ children }) {
         // Asosiy tezlashtirish: ikkalasini bitta qatorda parallel yuklaymiz!
         const [token, userData] = await Promise.all([
           user.getIdToken(),
-          getOrCreateUser(user)
+          getUserData(user.uid),
         ]);
 
         const endDate = userData?.subscription?.endDate;
@@ -46,7 +46,7 @@ export default function AuthProvider({ children }) {
     });
 
     return unsub;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return children;
