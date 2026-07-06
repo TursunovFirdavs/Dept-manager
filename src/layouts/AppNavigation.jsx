@@ -5,7 +5,7 @@ import {
   NotebookTabs,
   BriefcaseBusiness,
   User,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";

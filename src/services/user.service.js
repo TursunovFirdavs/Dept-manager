@@ -1,7 +1,6 @@
 import {
   doc,
   getDoc,
-  setDoc,
   serverTimestamp,
   collection,
   getDocs,
@@ -11,43 +10,43 @@ import {
 
 import { db } from "../firebase/firestore";
 
-export const getOrCreateUser = async (user) => {
-  const ref = doc(db, "users", user.uid);
-  const snapshot = await getDoc(ref);
+// export const getOrCreateUser = async (user) => {
+//   const ref = doc(db, "users", user.uid);
+//   const snapshot = await getDoc(ref);
 
-  if (!snapshot.exists()) {
-    const newUserData = {
-      uid: user.uid,
-      role: "user",
-      status: "active",
-      businessType: "market",
-      ownerName: "",
-      shopName: "",
-      phone: "",
-      note: "",
-      firmCount: 0,
-      totalDebt: 0,
-      totalPurchase: 0,
-      totalPayment: 0,
-      subscription: {
-        plan: "trial",
-        status: "active",
-        startDate: serverTimestamp(),
-        endDate: null,
-      },
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
+//   if (!snapshot.exists()) {
+//     const newUserData = {
+//       uid: user.uid,
+//       role: "user",
+//       status: "active",
+//       businessType: "market",
+//       ownerName: "",
+//       shopName: "",
+//       phone: "",
+//       note: "",
+//       firmCount: 0,
+//       totalDebt: 0,
+//       totalPurchase: 0,
+//       totalPayment: 0,
+//       subscription: {
+//         plan: "trial",
+//         status: "active",
+//         startDate: serverTimestamp(),
+//         endDate: null,
+//       },
+//       createdAt: serverTimestamp(),
+//       updatedAt: serverTimestamp(),
+//     };
 
-    await setDoc(ref, newUserData);
-    return { id: user.uid, ...newUserData };
-  }
+//     await setDoc(ref, newUserData);
+//     return { id: user.uid, ...newUserData };
+//   }
 
-  return {
-    id: snapshot.id,
-    ...snapshot.data(),
-  };
-};
+//   return {
+//     id: snapshot.id,
+//     ...snapshot.data(),
+//   };
+// };
 
 export const getUserData = async (uid) => {
   const snapshot = await getDoc(doc(db, "users", uid));
