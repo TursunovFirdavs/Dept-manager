@@ -14,7 +14,11 @@ import { Card, CardContent } from "@/components/ui/card";
 const profileSchema = z.object({
   ownerName: z.string().min(3, "Ism kamida 3 ta harfdan iborat bo'lishi kerak"),
   phone: z.string().min(9, "Telefon raqami noto'g'ri kiritildi"),
-  email: z.string().email("Noto'g'ri email formati").optional().or(z.literal('')),
+  email: z
+    .string()
+    .email("Noto'g'ri email formati")
+    .optional()
+    .or(z.literal("")),
 });
 
 const ProfileEdit = () => {
@@ -30,7 +34,7 @@ const ProfileEdit = () => {
   } = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      ownerName: userData?.ownerName || "",
+      username: userData?.username || "",
       phone: userData?.phone || "",
       email: userData?.email || "",
     },
@@ -42,10 +46,10 @@ const ProfileEdit = () => {
     try {
       // Bu yerda API ga yuborish mantiqi bo'ladi
       // masalan: await updateDoc(doc(db, "users", userData.uid), data);
-      
+
       // Simulyatsiya (1.5 soniya)
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      
+
       console.log("Saqlangan ma'lumotlar:", data);
       toast.success("Ma'lumotlar muvaffaqiyatli saqlandi");
       navigate("/profile");
@@ -60,7 +64,7 @@ const ProfileEdit = () => {
     <div className="pb-24 font-sans px-4 max-w-3xl mx-auto w-full">
       {/* Header/Back button area */}
       <div className="flex items-center gap-3 py-6">
-        <button 
+        <button
           type="button"
           onClick={() => navigate("/profile")}
           className="p-2 -ml-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer text-slate-700 dark:text-slate-300"
@@ -76,8 +80,10 @@ const ProfileEdit = () => {
       <div className="w-full">
         <Card className="w-full rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#121212] overflow-hidden">
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-              
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-3"
+            >
               <FormField
                 label="Ism va familiya"
                 icon={User}
@@ -112,9 +118,10 @@ const ProfileEdit = () => {
                   type="submit"
                   disabled={isLoading || !isDirty}
                   className={`cursor-pointer w-full flex items-center justify-center gap-2 p-3.5 rounded-xl transition-colors font-semibold text-[15px] shadow-sm
-                    ${isLoading || !isDirty 
-                      ? 'bg-blue-100 text-blue-400 dark:bg-blue-900/20 dark:text-blue-700 cursor-not-allowed' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-500'
+                    ${
+                      isLoading || !isDirty
+                        ? "bg-blue-100 text-blue-400 dark:bg-blue-900/20 dark:text-blue-700 cursor-not-allowed"
+                        : "bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-500"
                     }`}
                 >
                   {isLoading ? (
@@ -125,7 +132,6 @@ const ProfileEdit = () => {
                   <span>{isLoading ? "Saqlanmoqda..." : "Saqlash"}</span>
                 </button>
               </div>
-              
             </form>
           </CardContent>
         </Card>
