@@ -9,10 +9,32 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import { useEffect, useState } from "react";
+import { Keyboard } from "@capacitor/keyboard";
+import { Capacitor } from "@capacitor/core";
 
 const AppNavigation = () => {
   const location = useLocation();
   const userData = useAuthStore((state) => state.userData);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setKeyboardVisible(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setKeyboardVisible(false);
+      });
+    }
+    return () => {
+      if (Capacitor.isNativePlatform()) {
+        Keyboard.removeAllListeners();
+      }
+    };
+  }, []);
+
+  if (isKeyboardVisible) return null;
 
   return (
     <div className="fixed bottom-0 w-full bg-white dark:bg-[#121212] border-t border-slate-200 dark:border-slate-800 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] md:hidden z-50 pb-safe">
