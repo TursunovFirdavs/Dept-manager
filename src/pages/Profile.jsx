@@ -22,7 +22,7 @@ const ProfilePage = () => {
     }
   };
 
-  const ownerName = userData?.ownerName || "Foydalanuvchi";
+  const ownerName = userData?.username || "Foydalanuvchi";
   const initials = ownerName
     .split(" ")
     .map((n) => n[0])
