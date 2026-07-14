@@ -39,7 +39,7 @@ const AppNavigation = () => {
               }`}
             >
               <NotebookTabs className="w-6 h-6" />
-              Qarzlar
+              {userData?.businessType === "supplier" ? "Qarzlar" : "Firmalar"}
             </Link>
             {userData?.businessType === "supplier" && (
               <Link
@@ -63,7 +63,7 @@ const AppNavigation = () => {
               }`}
             >
               <History className="w-6 h-6" />
-              Transactions
+              Arxiv
             </Link>
             <Link
               to="/statistika"

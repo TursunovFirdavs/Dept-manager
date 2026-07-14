@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { getTransactionsByDateRange } from "@/services/transaction.service";
+import { getTransactionsByDateRange, getSupplierTransactionsByDateRange } from "@/services/transaction.service";
 import { useAuthStore } from "@/store/authStore";
-import { getSupplierTransactionsByDate } from "@/services/supplier.service";
 
 export const useStatistics = (type) => {
   const user = useAuthStore((state) => state.user);
@@ -44,20 +43,19 @@ export const useStatistics = (type) => {
           end = new Date(viewMonth.getFullYear(), 11, 31, 23, 59, 59, 999);
         }
 
-        const allTransactionsData = await getTransactionsByDateRange(
-          user.uid,
-          start,
-          end,
-        );
-        const supplierTransactionsData = await getSupplierTransactionsByDate(
-          user.uid,
-          start,
-          end,
-        );
-
         if (type === "supplier") {
+          const supplierTransactionsData = await getSupplierTransactionsByDateRange(
+            user.uid,
+            start,
+            end,
+          );
           setTransactions(supplierTransactionsData);
         } else {
+          const allTransactionsData = await getTransactionsByDateRange(
+            user.uid,
+            start,
+            end,
+          );
           setTransactions(allTransactionsData);
         }
       } catch (error) {
@@ -83,7 +81,7 @@ export const useStatistics = (type) => {
 
     filteredData.forEach((tx) => {
       const amount = tx.amount || 0;
-      const firmName = tx.firmName || "Noma'lum";
+      const firmName = tx.supplierName || tx.firmName || "Noma'lum"; // supplierTransactions uses supplierName
 
       if (tx.type === "purchase") {
         totalPurchases += amount;
@@ -122,5 +120,6 @@ export const useStatistics = (type) => {
     viewMonth,
     setViewMonth,
     stats,
+    transactions,
   };
 };

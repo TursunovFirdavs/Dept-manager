@@ -16,7 +16,8 @@ export const createSupplier = async (uid, data) => {
   return addDoc(collection(db, "users", uid, "suppliers"), {
     name: data.name,
     phone: data.phone || "",
-    balance: 0,
+    balance: data.balance ? Number(data.balance) : 0,
+    visitDay: data.visitDay || "MON",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });

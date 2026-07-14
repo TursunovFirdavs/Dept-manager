@@ -22,6 +22,8 @@ import ProfileEdit from "@/pages/ProfileEdit";
 import Transactions from "@/pages/Transactions";
 import StatisticsPage from "@/pages/Statistics";
 import SuppliersPage from "@/pages/Suppliers";
+import SupplierStatistics from "@/pages/SupplierStatistics";
+import AddSupplier from "../pages/AddSupplier";
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +86,14 @@ export const router = createBrowserRouter([
       {
         path: "/suppliers",
         element: <SuppliersPage />,
+      },
+      {
+        path: "/supplier-statistics",
+        element: <SupplierStatistics />,
+      },
+      {
+        path: "/suppliers/add",
+        element: <AddSupplier />,
       },
       {
         path: "/admin",

@@ -11,7 +11,7 @@ import {
   ChevronRight,
   Wallet,
   ShieldCheck,
-  BriefcaseBusiness
+  BriefcaseBusiness,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
@@ -22,15 +22,23 @@ const Sidebar = () => {
 
   const navLinks = [
     { name: "Asosiy", path: "/dashboard", icon: House },
-    { name: "Qarzlar", path: "/firms", icon: NotebookTabs },
+    {
+      name: userData?.businessType === "supplier" ? "Qarzlar" : "Firmalar",
+      path: "/firms",
+      icon: NotebookTabs,
+    },
   ];
 
   if (userData?.businessType === "supplier") {
-    navLinks.push({ name: "Firmalar", path: "/suppliers", icon: BriefcaseBusiness });
+    navLinks.push({
+      name: "Firmalar",
+      path: "/suppliers",
+      icon: BriefcaseBusiness,
+    });
   }
 
   navLinks.push(
-    { name: "Transactions", path: "/transactions", icon: History },
+    { name: "Arxiv", path: "/transactions", icon: History },
     { name: "Statistika", path: "/statistika", icon: ChartNoAxesCombined },
   );
 
@@ -39,7 +47,7 @@ const Sidebar = () => {
   }
 
   return (
-    <aside 
+    <aside
       className={`hidden md:flex flex-col h-screen bg-white dark:bg-[#121212] border-r border-slate-200 dark:border-slate-800 shadow-sm sticky top-0 transition-all duration-300 z-40 ${
         isCollapsed ? "w-20" : "w-64"
       }`}
@@ -53,8 +61,13 @@ const Sidebar = () => {
       </button>
 
       {/* Logo Area */}
-      <div className={`h-16 flex items-center border-b border-slate-100 dark:border-slate-800/60 overflow-hidden ${isCollapsed ? "justify-center px-0" : "px-6"}`}>
-        <a href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+      <div
+        className={`h-16 flex items-center border-b border-slate-100 dark:border-slate-800/60 overflow-hidden ${isCollapsed ? "justify-center px-0" : "px-6"}`}
+      >
+        <a
+          href="/dashboard"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
           <div className="bg-blue-600 text-white p-1.5 rounded-lg shrink-0">
             <Wallet size={18} />
           </div>
@@ -74,7 +87,9 @@ const Sidebar = () => {
           </p>
         )}
         {navLinks.map((link) => {
-          const isActive = path === link.path || (link.path !== "/dashboard" && path.startsWith(link.path));
+          const isActive =
+            path === link.path ||
+            (link.path !== "/dashboard" && path.startsWith(link.path));
           const Icon = link.icon;
           return (
             <Link
@@ -89,15 +104,21 @@ const Sidebar = () => {
                   : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              <Icon className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-600 dark:text-blue-500" : "text-slate-400"}`} />
-              {!isCollapsed && <span className="whitespace-nowrap">{link.name}</span>}
+              <Icon
+                className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-600 dark:text-blue-500" : "text-slate-400"}`}
+              />
+              {!isCollapsed && (
+                <span className="whitespace-nowrap">{link.name}</span>
+              )}
             </Link>
           );
         })}
       </div>
 
       {/* Profile Section at Bottom */}
-      <div className={`p-4 border-t border-slate-100 dark:border-slate-800/60 overflow-hidden`}>
+      <div
+        className={`p-4 border-t border-slate-100 dark:border-slate-800/60 overflow-hidden`}
+      >
         <Link
           to="/profile"
           title={isCollapsed ? "Profil" : ""}
@@ -114,7 +135,9 @@ const Sidebar = () => {
           </div>
           {!isCollapsed && (
             <div className="flex-1 truncate">
-              <p className="truncate">{userData?.ownerName || "Foydalanuvchi"}</p>
+              <p className="truncate">
+                {userData?.ownerName || "Foydalanuvchi"}
+              </p>
             </div>
           )}
         </Link>

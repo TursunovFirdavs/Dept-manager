@@ -36,7 +36,10 @@ import toast from "react-hot-toast";
 import { Calendar as ShadcnCalendar } from "@/components/ui/calendar";
 
 const transactionSchema = z.object({
-  amount: z.preprocess((val) => Number(String(val).replace(/\D/g, "")), z.number().min(1, "Summani to'g'ri kiriting")),
+  amount: z.preprocess(
+    (val) => Number(String(val).replace(/\D/g, "")),
+    z.number().min(1, "Summani to'g'ri kiriting"),
+  ),
   note: z.string().optional(),
 });
 
@@ -98,7 +101,13 @@ const FirmDetails = () => {
   const handlePurchase = async (data) => {
     setIsLoading(true);
     try {
-      await addPurchase(user.uid, firmId, firm.name, data.amount, data.note || "");
+      await addPurchase(
+        user.uid,
+        firmId,
+        firm.name,
+        data.amount,
+        data.note || "",
+      );
       await loadData();
       reset();
       toast.success("Tovar qo'shildi (Yangi qarz)");
@@ -111,14 +120,25 @@ const FirmDetails = () => {
 
   const handlePayment = async (data) => {
     setIsLoading(true);
-    try {
-      await addPayment(user.uid, firmId, firm.name, data.amount, data.note || "");
-      await loadData();
-      reset();
-      toast.success("To'lov qilindi");
-    } catch {
-      toast.error("Xatolik yuz berdi");
-    } finally {
+    if (data.amount <= firm.balance) {
+      try {
+        await addPayment(
+          user.uid,
+          firmId,
+          firm.name,
+          data.amount,
+          data.note || "",
+        );
+        await loadData();
+        reset();
+        toast.success("To'lov qilindi");
+      } catch {
+        toast.error("Xatolik yuz berdi");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      toast.error("Noto'ri mablag' kirityabsiz");
       setIsLoading(false);
     }
   };
@@ -159,14 +179,16 @@ const FirmDetails = () => {
     if (filterType !== "all") {
       matchesType = tx.type === filterType;
     }
-    
+
     let matchesDate = false;
     const date = tx.createdAt?.toDate ? tx.createdAt.toDate() : null;
     if (date) {
       if (selectedDate) {
         matchesDate = date.toDateString() === selectedDate.toDateString();
       } else {
-        matchesDate = date.getMonth() === viewMonth.getMonth() && date.getFullYear() === viewMonth.getFullYear();
+        matchesDate =
+          date.getMonth() === viewMonth.getMonth() &&
+          date.getFullYear() === viewMonth.getFullYear();
       }
     }
 
@@ -298,13 +320,18 @@ const FirmDetails = () => {
                   {...register("amount", {
                     onChange: (e) => {
                       const rawValue = e.target.value.replace(/\D/g, "");
-                      e.target.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                    }
+                      e.target.value = rawValue.replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ".",
+                      );
+                    },
                   })}
                 />
               </div>
               {errors.amount && (
-                <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.amount.message}</p>
+                <p className="text-red-500 text-[11px] mt-1 font-medium">
+                  {errors.amount.message}
+                </p>
               )}
             </div>
 
@@ -371,7 +398,9 @@ const FirmDetails = () => {
                   variant="ghost"
                   size="sm"
                   className={`h-8 gap-1.5 text-[12px] font-medium px-2 cursor-pointer ${
-                    selectedDate || viewMonth.getMonth() !== new Date().getMonth() || viewMonth.getFullYear() !== new Date().getFullYear()
+                    selectedDate ||
+                    viewMonth.getMonth() !== new Date().getMonth() ||
+                    viewMonth.getFullYear() !== new Date().getFullYear()
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
                   }`}
@@ -405,7 +434,9 @@ const FirmDetails = () => {
                   toYear={new Date().getFullYear()}
                   className="bg-white dark:bg-[#121212] rounded-[16px]"
                 />
-                {(selectedDate || viewMonth.getMonth() !== new Date().getMonth() || viewMonth.getFullYear() !== new Date().getFullYear()) && (
+                {(selectedDate ||
+                  viewMonth.getMonth() !== new Date().getMonth() ||
+                  viewMonth.getFullYear() !== new Date().getFullYear()) && (
                   <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#121212] rounded-b-[16px]">
                     <button
                       onClick={() => {
@@ -426,54 +457,54 @@ const FirmDetails = () => {
             <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <PopoverTrigger asChild>
                 <Button
-                variant="ghost"
-                size="sm"
-                className={`h-8 gap-1.5 text-[12px] font-medium ${
-                  filterType !== "all"
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                    : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
-                }`}
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 gap-1.5 text-[12px] font-medium ${
+                    filterType !== "all"
+                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                      : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
+                  }`}
+                >
+                  <ListFilter className="w-3.5 h-3.5" />
+                  Filtr {filterType !== "all" && "•"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-44 p-1.5 rounded-[14px] shadow-lg border-slate-100 dark:border-slate-800 bg-white dark:bg-[#121212]"
               >
-                <ListFilter className="w-3.5 h-3.5" />
-                Filtr {filterType !== "all" && "•"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="end"
-              className="w-44 p-1.5 rounded-[14px] shadow-lg border-slate-100 dark:border-slate-800 bg-white dark:bg-[#121212]"
-            >
-              <button
-                onClick={() => handleSelectFilter("all")}
-                className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
-                  filterType === "all"
-                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                }`}
-              >
-                Barchasi
-              </button>
-              <button
-                onClick={() => handleSelectFilter("purchase")}
-                className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
-                  filterType === "purchase"
-                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                }`}
-              >
-                Yangi Tovar - Qarz
-              </button>
-              <button
-                onClick={() => handleSelectFilter("payment")}
-                className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
-                  filterType === "payment"
-                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                }`}
-              >
-                To'lov - Naqd
-              </button>
-            </PopoverContent>
-          </Popover>
+                <button
+                  onClick={() => handleSelectFilter("all")}
+                  className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                    filterType === "all"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  }`}
+                >
+                  Barchasi
+                </button>
+                <button
+                  onClick={() => handleSelectFilter("purchase")}
+                  className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                    filterType === "purchase"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  }`}
+                >
+                  Yangi Tovar - Qarz
+                </button>
+                <button
+                  onClick={() => handleSelectFilter("payment")}
+                  className={`w-full text-left px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                    filterType === "payment"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  }`}
+                >
+                  To'lov - Naqd
+                </button>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 

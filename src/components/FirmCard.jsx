@@ -1,7 +1,10 @@
 import { Card, CardTitle } from "@/components/ui/card";
 import { formatDateUz } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 
 const FirmCard = ({ firm, onClick }) => {
+  const userData = useAuthStore((state) => state.userData);
+
   const getInitials = (name) => {
     if (!name) return "";
     const w = name.trim().split(/\s+/);
@@ -16,9 +19,10 @@ const FirmCard = ({ firm, onClick }) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
-  const firmPercent = firm.totalPurchase > 0 
-    ? Math.floor((firm.balance / firm.totalPurchase) * 100) 
-    : 0;
+  const firmPercent =
+    firm.totalPurchase > 0
+      ? Math.floor((firm.balance / firm.totalPurchase) * 100)
+      : 0;
 
   return (
     <Card
@@ -34,16 +38,20 @@ const FirmCard = ({ firm, onClick }) => {
             {capitalize(firm.name)}
           </CardTitle>
           <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium truncate">
-            {firm.updatedAt?.toDate ? formatDateUz(firm.updatedAt.toDate()) : "Sana yo'q"}
+            {firm.updatedAt?.toDate
+              ? formatDateUz(firm.updatedAt.toDate())
+              : "Sana yo'q"}
           </p>
         </div>
         <div className="flex flex-col items-end flex-shrink-0">
           <p className="text-[16px] font-bold text-slate-900 dark:text-slate-100 mb-0.5">
             {firm.balance?.toLocaleString("fr-FR") || 0}
           </p>
-          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400">
-            {firmPercent}%
-          </p>
+          {!userData?.businessType === "supplier" && (
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">
+              {firmPercent}% qarz
+            </p>
+          )}
         </div>
       </div>
     </Card>
