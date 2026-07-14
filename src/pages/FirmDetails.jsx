@@ -315,6 +315,7 @@ const FirmDetails = () => {
                 </span>
                 <Input
                   type="text"
+                  inputMode="numeric"
                   placeholder="0"
                   className={`pl-4 pr-14 h-12 rounded-[14px] bg-slate-50 dark:bg-slate-900/50 text-[16px] font-bold placeholder:text-slate-300 ${errors.amount ? "border-red-500" : "border-slate-200 dark:border-slate-800"}`}
                   {...register("amount", {
